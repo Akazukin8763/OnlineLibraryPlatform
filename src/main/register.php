@@ -20,11 +20,11 @@
             return function_alert("Username has already taken.");
         }
         
-        $sql = "INSERT INTO user (ID, username, email, password)
-                VALUES (0, '".$username."', '".$email."', '".$password."')";
+        $sql = "INSERT INTO user (username, email, password, is_admin)
+                VALUES ('".$username."', '".$email."', '".$password."', 0)";
 
         if (mysqli_query($conn, $sql)){
-            header("url=index.php");
+            header('location: index.php');
             exit;
         }
         else {
