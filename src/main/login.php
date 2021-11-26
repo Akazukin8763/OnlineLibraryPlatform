@@ -8,7 +8,7 @@
         $password = $_POST["password"];
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "SELECT * FROM user WHERE username = '".$username."'";
+        $sql = "SELECT * FROM User WHERE username = '".$username."'";
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
 

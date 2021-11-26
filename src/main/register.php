@@ -9,22 +9,22 @@
         $password = $_POST["password"];
 
         // 檢查電子郵件是否重複註冊
-        $checkEmail = "SELECT * FROM user WHERE email = '".$email."'";
+        $checkEmail = "SELECT * FROM User WHERE email = '".$email."'";
         if (mysqli_num_rows(mysqli_query($conn, $checkEmail)) != 0) {
             return function_alert("Email is invalid or already taken.");
         }
 
         // 檢查使用者名稱是否重複
-        $checkUsername = "SELECT * FROM user WHERE username = '".$username."'";
+        $checkUsername = "SELECT * FROM User WHERE username = '".$username."'";
         if (mysqli_num_rows(mysqli_query($conn, $checkUsername)) != 0) {
             return function_alert("Username has already taken.");
         }
         
-        $sql = "INSERT INTO user (username, email, password, is_admin)
+        $sql = "INSERT INTO User (username, email, password, is_admin)
                 VALUES ('".$username."', '".$email."', '".$password."', 0)";
 
         if (mysqli_query($conn, $sql)){
-            header('location: index.php');
+            header("location: index.php");
             exit;
         }
         else {
