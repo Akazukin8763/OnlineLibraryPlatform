@@ -19,12 +19,23 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
         <title>Index</title>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="module">
+            import { login } from "./AccountModule/Account/account.js";
+            document.getElementById("btn").addEventListener("click", function() {
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+
+                login(username, password);
+            }, false);
+        </script>
     </head>
     <body>
         <div style="width: 100%; position: absolute; top: 15%;">
             <div style="text-align: center;"><h1>Log In</h1></div>
 
-            <form name="registerForm" method="post" action="login.php" onsubmit="return validateForm()" style="width: 30%; margin: auto;">
+            <form name="loginForm" style="width: 30%; margin: auto;">
                 <div class="mb-3">
                     <span for="username" class="form-label" required="required">Username</span>
                     <input type="text" class="form-control" id="username" name="username">
@@ -38,8 +49,8 @@
                 <input type="checkbox" class="form-check-input" id="exampleCheck1">
                 <label class="form-check-label" for="exampleCheck1">Check me out</label>
                 </div> -->
-                    <a href="register.php" class="form-label" >Create Account</a>
-                <button type="submit" class="btn btn-primary" id="submit" style="float: right;">Log In</button>
+                    <a href="register.html" class="form-label" >Create Account</a>
+                <button type="button" class="btn btn-primary" id="btn" style="float: right;">Log In</button>
             </form>
         </div>
         <!-- Optional JavaScript; choose one of the two! -->

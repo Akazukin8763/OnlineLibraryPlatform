@@ -23,23 +23,16 @@
         <title>Welcome</title>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="module">
+            import { logout } from "./AccountModule/Account/account.js";
+            document.getElementById("btn").addEventListener("click", function() {
+                logout(<?php echo $ID;?>);
+            }, false);
+        </script>
     </head>
     <body>
         <?php echo "<h1>你好 [".$username."]</h1>"; ?>
 
-        <a href='logout.php'>登出</a>
-        <div>
-            <span for="is_admin" class="form-label">Admin</span>
-            <input type="text" class="form-control" id="is_admin" name="is_admin">
-            <button id="btn" oncl>Submit</button>
-        </div>
-
-        <script type="module">
-            import { listUser } from "./user_func/user_func.js";
-            document.getElementById("btn").addEventListener("click", function() {
-                var is_admin = document.getElementById("is_admin").value;
-                listUser(is_admin);
-            }, false);
-        </script>
+        <button type="button" class="btn btn-primary" id="btn">登出</button>
     </body>
 </html>
