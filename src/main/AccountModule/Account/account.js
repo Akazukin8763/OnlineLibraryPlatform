@@ -1,4 +1,17 @@
 export function register(__username, __email, __password) {
+    if (__username.length > 16) {
+        console.log('__username 長度超出限制。');
+        return;
+    }
+    else if (__email.length > 64) {
+        console.log('__email 長度超出限制。');
+        return;
+    }
+    else if (__password.length > 16) {
+        console.log('__password 長度超出限制。');
+        return;
+    }
+
     $.ajax({
         type: "POST",
         url: "AccountModule/Account/register.php",
@@ -24,6 +37,15 @@ export function register(__username, __email, __password) {
 }
 
 export function login(__username, __password) {
+    if (__username.length > 16) {
+        console.log('__username 長度超出限制。');
+        return;
+    }
+    else if (__password.length > 16) {
+        console.log('__password 長度超出限制。');
+        return;
+    }
+
     $.ajax({
         type: "POST",
         url: "AccountModule/Account/login.php",
@@ -74,6 +96,34 @@ export function logout(__ID) {
     })
 }
 
-export function forgotPassword() {
+export function forgotPassword(__username, __email) {
+    if (__username.length > 16) {
+        console.log('__username 長度超出限制。');
+        return;
+    }
+    else if (__email.length > 64) {
+        console.log('__email 長度超出限制。');
+        return;
+    }
 
+    $.ajax({
+        type: "POST",
+        url: "AccountModule/Account/forgotPassword.php",
+        dataType: "json",
+        data: {
+            username: __username,
+            email: __email,
+        },
+        success: function(response) {
+            if (response.old_password && response.new_password) { // 回傳的 json 中含有 old_password, new_password
+                console.log('Old: [' + response.old_password + '], New: [' + response.new_password + ']');
+            }
+            else {
+                console.log(response.errorMsg);
+            }
+        },
+        error: function(jqXHR) {
+            console.log(jqXHR);
+        }
+    })
 }

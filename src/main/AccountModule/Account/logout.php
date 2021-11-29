@@ -6,6 +6,7 @@
         $ID = $_POST["ID"];
 
         if ($ID != null) {
+            // 更新使用者狀態為 OFFLINE
             $sql = "UPDATE User SET status = 'OFFLINE' WHERE ID = '$ID'";
             $result = mysqli_query($conn, $sql);
     
