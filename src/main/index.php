@@ -24,10 +24,10 @@
         <script type="module">
             import { login } from "./AccountModule/Account/account.js";
             document.getElementById("btn").addEventListener("click", function() {
-                var username = document.getElementById("username").value;
+                var email = document.getElementById("email").value;
                 var password = document.getElementById("password").value;
 
-                login(username, password);
+                login(email, password);
             }, false);
         </script>
     </head>
@@ -37,8 +37,8 @@
 
             <form name="loginForm" style="width: 30%; margin: auto;">
                 <div class="mb-3">
-                    <span for="username" class="form-label" required="required">Username</span>
-                    <input type="text" class="form-control" id="username" name="username">
+                    <span for="email" class="form-label" required="required">Email</span>
+                    <input type="text" class="form-control" id="email" name="email">
                 </div> 
                 <div class="mb-3">
                     <span for="password" class="form-label" required="required">Password</span>

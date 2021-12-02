@@ -7,7 +7,10 @@
         $email = $_POST["email"];
         $password = $_POST["password"];
 
-        if ($username != null && $email != null && $password != null) {
+        if ($username != null && $email != null && $password != null &&
+            is_string($username) && is_string($email) && is_string($password) &&
+            strlen($username) <= 16 && strlen($email) <= 64 && 6 <= strlen($password) && strlen($password) <= 16) {
+
             // 檢查電子郵件是否重複註冊
             $checkEmail = "SELECT * FROM User WHERE email = '$email'";
             if (mysqli_num_rows(mysqli_query($conn, $checkEmail)) != 0) { // 基本上只為 1

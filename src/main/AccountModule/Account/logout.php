@@ -5,7 +5,9 @@
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $ID = $_POST["ID"];
 
-        if ($ID != null) {
+        if ($ID != null &&
+            is_int((int) $ID)) {
+
             // 更新使用者狀態為 OFFLINE
             $sql = "UPDATE User SET status = 'OFFLINE' WHERE ID = '$ID'";
             $result = mysqli_query($conn, $sql);
@@ -18,7 +20,8 @@
                 echo json_encode(array('__STATUS' => 'SUCCESS'));
             }
             else {
-                echo json_encode(array('__STATUS' => 'ERROR'));
+                echo json_encode(array('__STATUS' => 'ERROR',
+                                    'errorMsg' => '狀態更新時發生錯誤。'));
             }
         }
         else {

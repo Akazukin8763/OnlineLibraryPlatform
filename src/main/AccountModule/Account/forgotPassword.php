@@ -6,11 +6,14 @@
         $username = $_POST["username"];
         $email = $_POST["email"];
 
-        if ($username != null && $email != null) {
+        if ($username != null && $email != null &&
+            is_string($username) && is_string($email) &&
+            strlen($username) <= 16 && strlen($email) <= 64) {
+
             $sql = "SELECT * FROM User WHERE username = '$username' and email = '$email'";
             $result = mysqli_query($conn, $sql);
     
-            if (mysqli_num_rows($result) == 1) { // 基本上註冊時已確保名稱郵件唯一
+            if (mysqli_num_rows($result) == 1) { // username, email 唯一
                 $row = mysqli_fetch_assoc($result);
 
                 $old_password = $row["password"];
