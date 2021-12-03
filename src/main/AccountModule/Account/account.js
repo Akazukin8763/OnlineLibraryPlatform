@@ -69,19 +69,12 @@ export function login(__email, __password) {
     })
 }
 
-export function logout(__ID) {
-    if (!Number.isInteger(__ID)) {
-        console.log('__ID 非整數。');
-        return;
-    }
-
+export function logout() {
     $.ajax({
         type: "POST",
         url: "AccountModule/Account/logout.php",
         dataType: "json",
-        data: {
-            ID: __ID,
-        },
+        data: {},
         success: function(response) {
             if (response.__STATUS) { // 回傳的 json 中含有 __STATUS
                 if (response.__STATUS = 'SUCCESS') {

@@ -26,7 +26,7 @@
         <script type="module">
             import { logout } from "./AccountModule/Account/account.js";
             document.getElementById("btn").addEventListener("click", function() {
-                logout(<?php echo $ID;?>);
+                logout();
             }, false);
         </script>
     </head>

@@ -3,7 +3,8 @@
     $conn = require_once "../../config.php";
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $ID = $_POST["ID"];
+        session_start();
+        $ID = $_SESSION["ID"];
         $new_password = $_POST["password"];
 
         if ($ID != null && $new_password != null &&

@@ -3,7 +3,8 @@
     $conn = require_once "../../config.php";
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $ID = $_POST["ID"];
+        session_start();
+        $ID = $_SESSION["ID"];
         $new_username = $_POST["username"];
 
         if ($ID != null && $new_username != null &&
@@ -32,7 +33,6 @@
 
                     if ($result) {
                         // 修改 _SESSION 的 username
-                        session_start();
                         $_SESSION["username"] = $new_username;
 
                         echo json_encode(array('__STATUS' => 'SUCCESS'));
