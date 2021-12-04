@@ -21,6 +21,9 @@
         public $arrive_date;
         public $category;
         public $book_status;
+        public $score;
+        public $comment;
+        public $times;
     }
 
     if ($_SERVER['REQUEST_METHOD'] == "GET") {
@@ -68,6 +71,8 @@
                     }
                     else {
                         $book = new Book();
+
+                        // 書籍資訊
                         $book->book_ID = array($row["book_ID"]);
                         $book->title = $row["title"];
                         $book->image = $row["image"];
@@ -87,22 +92,33 @@
 
                         $book->book_status = array($row["book_status"]);
 
-                        /*
-                        // 抓另一張表
-                        $book->score = ;
-                        $book->comment = ; // array
-                        $book->times = ;
-
                         // 書籍評分
-                        $sql_book_score = "SELECT DISTINCT title, avg(score) as avg_score, sum(times) as total_times
+                        $sql_book_score = "SELECT avg(score) as avg_score, sum(times) as total_times
                                             FROM Book_Comment
                                             WHERE title = '$book->title'
                                             GROUP BY (title)";
-
-                        $sql_book_comment = "SELECT ID, comment
+                        $sql_book_comment = "SELECT comment
                                                 FROM Book_Comment
                                                 WHERE title = '$book->title'";
-                        */
+                        
+                        $result_book_score = mysqli_query($conn, $sql_book_score);
+                        $result_book_comment = mysqli_query($conn, $sql_book_comment);
+                                    
+                        if ($result_book_score && $result_book_comment) {
+                            // 平均評分、總借閱次數
+                            $row = mysqli_fetch_assoc($result_book_score);
+
+                            $book->score = $row["avg_score"];
+                            $book->times = $row["total_times"];
+
+                            // 全部評論
+                            $comment = array();
+                            while ($row = mysqli_fetch_assoc($result_book_comment)) {
+                                $comment[] = $row["comment"];
+                            }
+
+                            $book->comment = $comment;
+                        }
 
                         $data[] = $book;
                     }
