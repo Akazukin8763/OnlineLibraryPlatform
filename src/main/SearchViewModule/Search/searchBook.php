@@ -1,12 +1,4 @@
 <?php
-    /*
-    暫無
-    "score": 書籍平均評分(int),
-	"comment": 書籍評論(array),
-	"times": 總借閱次數(int)
-    塞選 User_Preferences
-    */
-
     // Include config file
     $conn = require_once "../../config.php";
 
@@ -27,6 +19,8 @@
     }
 
     if ($_SERVER['REQUEST_METHOD'] == "GET") {
+        session_start(); 
+        $ID = $_SESSION["ID"];
         $title = $_GET["title"];
         $category = $_GET["category"];
 
@@ -48,16 +42,39 @@
             }
             $sql_category = substr($sql_category, 0, -4);
 
+            // 使用者偏好
+            $sql = "SELECT * FROM User_Preferences WHERE ID = '$ID'";
+            $result = mysqli_query($conn, $sql);
+
+            $flag = 0;
+            $sql_prefer = '';
+            if ($result) { // 條件
+                $row = mysqli_fetch_assoc($result);
+
+                foreach ($category_list as $value) {
+                    if ($row[$value] == 0) {
+                        $sql_prefer = $sql_prefer.$value.' = 1 OR ';
+                        $flag = $flag + 1;
+                    }
+                }
+
+                if ($flag > 0) {
+                    $sql_prefer = " AND 
+                                    title not in (SELECT title
+                                                    FROM Book_Category
+                                                    WHERE ".$sql_prefer;
+                    $sql_prefer = substr($sql_prefer, 0, -4);
+                    $sql_prefer = $sql_prefer.")"; 
+                }
+            }
+            else { // 找不到偏好不重要，不額外篩選
+                // Nothing
+            }
+
+            // 塞選結果
             $sql = "SELECT *
                     FROM Book JOIN Book_Category USING (title)
-                    WHERE title LIKE '%$title%' AND ($sql_category)";
-            /*
-            EXPECT
-            (SELECT DISTINCT title
-            FROM Book JOIN Book_Category USING (title)
-            WHERE [使用者不喜歡的類型] <- User_Preferences
-            GROUP BY (title))"
-            */
+                    WHERE title LIKE '%$title%' AND ($sql_category) $sql_prefer";
             $result = mysqli_query($conn, $sql);
 
             if ($result) {
@@ -118,6 +135,9 @@
                             }
 
                             $book->comment = $comment;
+                        }
+                        else { // 查詢失敗，不重要，評分類的顯示未知即可
+                            // Nothing
                         }
 
                         $data[] = $book;
