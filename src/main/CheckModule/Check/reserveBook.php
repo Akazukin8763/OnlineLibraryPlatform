@@ -1,8 +1,4 @@
 <?php
-    /*
-    尚缺 User_Punishment (punish_date) 檢查
-    */
-
     // Include config file
     $conn = require_once "../../config.php";
 
@@ -14,9 +10,6 @@
         if ($ID != null && $book_ID != null &&
             is_int((int) $ID) && is_int((int) $book_ID)) {
             
-            // 確保時區正常
-            date_default_timezone_set('Asia/Taipei');
-            
             $sql = "SELECT book_status
                     FROM Book
                     WHERE book_ID = '$book_ID'";
@@ -26,13 +19,12 @@
                 $row = mysqli_fetch_assoc($result);
 
                 if ($row["book_status"] == "IDLE") { // 只有閒置才能預約，一次只能有一人預約
-                    /*
                     $sql = "SELECT punish_date
                             FROM User_Punishment
                             WHERE ID = '$ID'";
                     $result = mysqli_query($conn, $sql);
 
-                    if ($result) {
+                    if (mysqli_num_rows($result) == 1) {
                         $row = mysqli_fetch_assoc($result);
 
                         $today = date("Y-m-d H:i:s");
@@ -47,7 +39,6 @@
                     else { // 查不到表示沒有懲處，可預約
                         // Nothing
                     }
-                    */
 
                     $today = date("Y-m-d H:i:s");
 
