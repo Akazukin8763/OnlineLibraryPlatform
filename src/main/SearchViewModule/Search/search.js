@@ -32,7 +32,7 @@ export function searchBook(__title, __category) {
             if (response.result) { // 回傳的 json 中含有 result
                 response.result.forEach(book => {
                     console.log("title: " + book.title + ", category: " + book.category);
-                    console.log("author: " + book.author + ", publisher: " + book.publisher + "description: " + book.description);
+                    console.log("author: " + book.author + ", publisher: " + book.publisher + ", description: " + book.description);
                     console.log("publish_date: " + book.arrive_date + ", arrive_date: " + book.arrive_date);
                     console.log("book_ID: " + book.book_ID + ", book_status: " + book.book_status);
                     console.log("score: " + book.score + ", times: " + book.times + ", comment: " + book.comment);

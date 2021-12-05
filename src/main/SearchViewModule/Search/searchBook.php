@@ -96,7 +96,7 @@
                         $book->author = $row["author"];
                         $book->publisher = $row["publisher"];
                         $book->description = $row["description"];
-                        $book->publisher = $row["publish_date"];
+                        $book->publish_date = $row["publish_date"];
                         $book->arrive_date = $row["arrive_date"];
 
                         $book_category = array();
