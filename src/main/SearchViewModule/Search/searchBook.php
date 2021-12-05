@@ -67,11 +67,11 @@
                     $sql_prefer = $sql_prefer.")"; 
                 }
             }
-            else { // 找不到偏好不重要，不額外篩選
+            else { // 找不到偏好，不重要，不額外篩選
                 // Nothing
             }
 
-            // 塞選結果
+            // 篩選結果
             $sql = "SELECT *
                     FROM Book JOIN Book_Category USING (title)
                     WHERE title LIKE '%$title%' AND ($sql_category) $sql_prefer";
