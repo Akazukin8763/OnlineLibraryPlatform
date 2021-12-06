@@ -36,11 +36,12 @@
             strlen($title) <= 64) {
 
             // 書籍類別陣列轉換
-            $sql_category = '';
+            $sql_category = '(';
             foreach ($category as $value) {
                 $sql_category = $sql_category.$value.' = 1 OR ';
             }
             $sql_category = substr($sql_category, 0, -4);
+            $sql_category = $sql_category.')';
 
             // 使用者偏好
             $sql = "SELECT * FROM User_Preferences WHERE ID = '$ID'";
@@ -72,14 +73,20 @@
             }
 
             // 篩選結果
-            $sql = "SELECT *
-                    FROM Book JOIN Book_Category USING (title)
-                    WHERE title LIKE '%$title%' AND ($sql_category) $sql_prefer";
-            $result = mysqli_query($conn, $sql);
+            $_title = "%$title%"; // SQL 預處理，於關鍵字搜尋
 
-            if ($result) {
+            $sql = "SELECT * 
+                    FROM Book JOIN Book_Category USING (title) JOIN Book_Detail USING (title)
+                    WHERE title LIKE ? AND $sql_category $sql_prefer";
+            $stmt = $conn->prepare($sql); 
+            $stmt->bind_param("s", $_title);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+            if (count($rows) != 0) {
                 $data = array();
-                while ($row = mysqli_fetch_assoc($result)) { // 抓出每一筆相關資料
+                foreach($rows as $row) {
                     $last_book = end($data);
 
                     if ($last_book->title == $row["title"]) { // 在確保同一本書並排時，若前一本書與現在書名相同，則只合併 book_ID, book_status
@@ -143,16 +150,10 @@
                         $data[] = $book;
                     }
                 }
-                
-                if (count($data) != 0) {
-                    echo json_encode(array('result' => $data));
-                }
-                else {
-                    echo json_encode(array('errorMsg' => '查無書籍資料。'));
-                }
+                echo json_encode(array('result' => $data));
             }
             else {
-                echo json_encode(array('errorMsg' => '獲取書籍時發生錯誤。'));
+                echo json_encode(array('errorMsg' => '查無書籍資料。'));
             }
         }
         else {
