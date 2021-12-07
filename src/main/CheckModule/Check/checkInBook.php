@@ -69,7 +69,7 @@
                     $rows = $result->fetch_all(MYSQLI_ASSOC);
 
                     $start_date = date("Y-m-d H:i:s");
-                    $deadline = date("Y-m-d H:i:s", strtotime("+14 day"));
+                    $deadline = date("Y-m-d H:i:s", strtotime("+14 day"));  // 借閱 14 日
 
                     if (count($rows) != 0) {
                         $reserve_ID = $rows[0]["ID"];

@@ -1,0 +1,142 @@
+<?php
+    /*
+    尚未通知下一位使用者
+    */
+    // Include config file
+    $conn = require_once "../../config.php";
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        $ID = $_POST["ID"];
+        $book_ID = $_POST["book_ID"];
+        
+        if ($ID != null && $book_ID != null &&
+            is_int((int) $ID) && is_int((int) $book_ID)) {
+
+            // 檢查書籍是否是可歸還
+            $sql_check = "SELECT book_status
+                            FROM Book
+                            WHERE book_ID = ?";
+            $stmt = $conn->prepare($sql_check); 
+            $stmt->bind_param("i", $book_ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+            if (count($rows) == 1) {
+                $book_status = $rows[0]["book_status"];
+
+                if ($book_status == "BORROW") {
+                    // 檢查是否是本人借閱，且尚未歸還
+                    $sql_is_borrow = "SELECT *
+                                        FROM Book_Trace
+                                        WHERE book_ID = ? AND ID = ? AND end_date IS NULL AND deadline IS NOT NULL";
+                    $stmt = $conn->prepare($sql_is_borrow); 
+                    $stmt->bind_param("ii", $book_ID, $ID);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $rows = $result->fetch_all(MYSQLI_ASSOC); 
+
+                    if (count($rows) != 0) { // 基本上只為 1
+                        $start_date = $rows[0]["start_date"];
+                        $end_date = date("Y-m-d H:i:s");
+                        $deadline = $rows[0]["deadline"];
+                        
+                        $punish_date;
+                        if (strtotime($end_date) < strtotime($deadline)) { // 尚未逾期
+                            // Nothing，你很棒
+                            echo json_encode(array('errorMsg' => $deadline));
+                        }
+                        else { // 逾期
+                            $punish_date = date("Y-m-d H:i:s", strtotime("+7 day")); // 懲處 7 日
+
+                            $sql_punish = "INSERT INTO User_Punishment (ID, punish_date)
+                                            VALUES (?, ?)
+                                            ON DUPLICATE KEY UPDATE ID = ?, punish_date = ?";
+                            $stmt = $conn->prepare($sql_punish); 
+                            $stmt->bind_param("isis", $ID, $punish_date, $ID, $punish_date);
+                            $result = $stmt->execute();
+
+                            if ($result) {
+                                // Nothing
+                            }
+                            else {
+                                echo json_encode(array('errorMsg' => '更新懲處時發生錯誤。'));
+                                exit;
+                            }
+                        }
+
+                        // 更新還書日期
+                        $sql_checkOut = "UPDATE Book_Trace
+                                            SET end_date = ?
+                                            WHERE book_ID = ? AND ID = ? AND end_date IS NULL AND deadline IS NOT NULL";      
+                        $stmt = $conn->prepare($sql_checkOut); 
+                        $stmt->bind_param("sii", $end_date, $book_ID, $ID);
+                        $result = $stmt->execute();
+
+                        if ($result) {
+                            // 檢查後續有無人預約
+                            $sql_is_reserve = "SELECT *
+                                                FROM Book_Trace
+                                                WHERE book_ID = ? AND deadline IS NULL
+                                                ORDER BY start_date ASC";
+                            $stmt = $conn->prepare($sql_is_reserve); 
+                            $stmt->bind_param("i", $book_ID);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            $rows = $result->fetch_all(MYSQLI_ASSOC);
+                            
+                            /*
+                            這邊可通知下一位預約者
+                            */
+                            $new_book_status = 'IDLE';
+                            if (count($rows) != 0) { // 有人預約
+                                $new_book_status = 'RESERVE';
+                            }
+                            else { // 沒人預約
+                                $new_book_status = 'IDLE';
+                            }
+
+                            $sql_book_status = "UPDATE Book
+                                                SET book_status = ?
+                                                WHERE book_ID = ?";
+                            $stmt = $conn->prepare($sql_book_status); 
+                            $stmt->bind_param("si", $new_book_status, $book_ID);
+                            $result = $stmt->execute();
+
+                            if ($result) {
+                                echo json_encode(array('start_date' => $start_date,
+                                                        'end_date' => $end_date,
+                                                        'deadline' => $deadline,
+                                                        'punish_date' => $punish_date));
+                            }
+                            else {
+                                echo json_encode(array('errorMsg' => '更新書籍狀態時發生錯誤。'));
+                            }
+                        }
+                        else {
+                            echo json_encode(array('errorMsg' => '歸還書籍時發生錯誤。'));
+                        }
+                    }
+                    else {
+                        echo json_encode(array('errorMsg' => '使用者並未借用此書，無法歸還。'));
+                    }
+                }
+                else {
+                    echo json_encode(array('errorMsg' => '此書尚未被借閱，實體理應存在於圖書館中。'));
+                }
+            }
+            else {
+                echo json_encode(array('errorMsg' => '查無書籍資料。'));
+            }
+        }
+        else {
+            echo json_encode(array('errorMsg' => '參數輸入錯誤！'));
+        }
+    }
+    else {
+        echo json_encode(array('errorMsg' => '請求無效，只允許 POST 方式訪問！'));
+    }
+
+    // Close connection
+    mysqli_close($conn);
+?>
