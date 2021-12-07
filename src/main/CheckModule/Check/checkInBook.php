@@ -68,6 +68,9 @@
                     $result = $stmt->get_result();
                     $rows = $result->fetch_all(MYSQLI_ASSOC);
 
+                    $start_date = date("Y-m-d H:i:s");
+                    $deadline = date("Y-m-d H:i:s", strtotime("+14 day"));
+
                     if (count($rows) != 0) {
                         $reserve_ID = $rows[0]["ID"];
 
@@ -75,41 +78,52 @@
                             echo json_encode(array('errorMsg' => '已有人在此之前先預約此書，不可借閱。'));
                             exit;
                         }
-                        else { // 自己是最先預約的，可借閱
-                            // Nothing
+                        else { // 自己是最先預約的，可借閱（直接更新資料庫）
+                            // 借書
+                            $sql_checkIn = "UPDATE Book_Trace
+                                            SET start_date = ?, deadline = ?
+                                            WHERE book_ID = ? AND ID = ? AND deadline IS NULL";
+                            $stmt = $conn->prepare($sql_checkIn); 
+                            $stmt->bind_param("ssii", $start_date, $deadline, $book_ID, $ID);
+                            $result = $stmt->execute();
+        
+                            if ($result) { // 更新日期成功，不做任何事
+                                // Nothing
+                            }
+                            else {
+                                echo json_encode(array('errorMsg' => '借閱書籍時發生錯誤'));
+                                exit;
+                            }
                         }
                     }
-                    else { // 查不到表示沒人預約，可借閱
-                        // Nothing
-                    }
-
-                    // 借書
-                    $start_date = date("Y-m-d H:i:s");
-                    $deadline = date("Y-m-d H:i:s", strtotime("+14 day"));
-                    
-                    $sql_checkIn = "UPDATE Book_Trace
-                                    SET start_date = ?, deadline = ?
-                                    WHERE book_ID = ? AND ID = ? AND deadline IS NULL";
-                    $stmt = $conn->prepare($sql_checkIn); 
-                    $stmt->bind_param("ssii", $start_date, $deadline, $book_ID, $ID);
-                    $result = $stmt->execute();
-
-                    if ($result) {
-                        // 更新書籍狀態
-                        $sql_status = "UPDATE Book
-                                        SET book_status = 'BORROW'
-                                        WHERE book_ID = ?";
-                        $stmt = $conn->prepare($sql_status); 
-                        $stmt->bind_param("i", $book_ID);
+                    else { // 查不到表示沒人預約，可借閱（新增資料庫）
+                        // 借書
+                        $sql_checkIn = "INSERT INTO Book_Trace (book_ID, ID, start_date, deadline)
+                                        VALUES (?, ?, ?, ?)";
+                        $stmt = $conn->prepare($sql_checkIn); 
+                        $stmt->bind_param("iiss", $book_ID, $ID, $start_date, $deadline);
                         $result = $stmt->execute();
-
-                        if ($result) {
-                            echo json_encode(array('start_date' => $start_date, 
-                                                    'deadline' => $deadline));
+    
+                        if ($result) { // 更新日期成功，不做任何事
+                            // Nothing
                         }
                         else {
                             echo json_encode(array('errorMsg' => '借閱書籍時發生錯誤'));
+                            exit;
                         }
+                    }
+
+                    // 更新書籍狀態
+                    $sql_status = "UPDATE Book
+                                    SET book_status = 'BORROW'
+                                    WHERE book_ID = ?";
+                    $stmt = $conn->prepare($sql_status); 
+                    $stmt->bind_param("i", $book_ID);
+                    $result = $stmt->execute();
+
+                    if ($result) {
+                        echo json_encode(array('start_date' => $start_date, 
+                                                'deadline' => $deadline));
                     }
                     else {
                         echo json_encode(array('errorMsg' => '借閱書籍時發生錯誤'));
