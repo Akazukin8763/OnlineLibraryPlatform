@@ -3,7 +3,6 @@
     $conn = require_once "../../config.php";
 
     class Book {
-        public $book_ID;
         public $title;
         public $image;
         public $author;
@@ -11,10 +10,20 @@
         public $description;
         public $publish_date;
         public $arrive_date;
-        public $category;
+        public $category; // (array)
+
+        public $books; // class Books(array)
+        public $comments; // class Comments(array)
+    }
+    class Books {
+        public $book_ID;
         public $book_status;
+    }
+    class Comments {
+        public $username;
         public $score;
         public $comment;
+        public $comment_date;
         public $times;
     }
 
@@ -76,7 +85,7 @@
             $_title = "%$title%"; // SQL 預處理，於關鍵字搜尋
 
             $sql = "SELECT * 
-                    FROM Book JOIN Book_Category USING (title) JOIN Book_Detail USING (title)
+                    FROM Book_Detail JOIN Book_Category USING (title)
                     WHERE title LIKE ? AND $sql_category $sql_prefer";
             $stmt = $conn->prepare($sql); 
             $stmt->bind_param("s", $_title);
@@ -87,68 +96,71 @@
             if (count($rows) != 0) {
                 $data = array();
                 foreach($rows as $row) {
-                    $last_book = end($data);
+                    // 書籍資訊
+                    $book = new Book();
 
-                    if ($last_book->title == $row["title"]) { // 在確保同一本書並排時，若前一本書與現在書名相同，則只合併 book_ID, book_status
-                        $last_book->book_ID[] = $row["book_ID"];
-                        $last_book->book_status[] = $row["book_status"];
-                    }
-                    else {
-                        $book = new Book();
+                    $book->title = $row["title"];
+                    $book->image = $row["image"];
+                    $book->author = $row["author"];
+                    $book->publisher = $row["publisher"];
+                    $book->description = $row["description"];
+                    $book->publish_date = $row["publish_date"];
+                    $book->arrive_date = $row["arrive_date"];
 
-                        // 書籍資訊
-                        $book->book_ID = array($row["book_ID"]);
-                        $book->title = $row["title"];
-                        $book->image = $row["image"];
-                        $book->author = $row["author"];
-                        $book->publisher = $row["publisher"];
-                        $book->description = $row["description"];
-                        $book->publish_date = $row["publish_date"];
-                        $book->arrive_date = $row["arrive_date"];
-
-                        $book_category = array();
-                        foreach ($category_list as $value) {
-                            if ($row[$value] == 1) {
-                                $book_category[] = $value;
-                            }
+                    $book_category = array();
+                    foreach ($category_list as $value) {
+                        if ($row[$value] == 1) {
+                            $book_category[] = $value;
                         }
-                        $book->category = $book_category;
+                    }
+                    $book->category = $book_category;
 
-                        $book->book_status = array($row["book_status"]);
+                    // 書籍狀態
+                    $sql_books = "SELECT *
+                                    FROM Book
+                                    WHERE title = ?";
+                    $stmt_books = $conn->prepare($sql_books); 
+                    $stmt_books->bind_param("s", $row["title"]);
+                    $stmt_books->execute();
+                    $result_books = $stmt_books->get_result();
+                    $rows_books = $result_books->fetch_all(MYSQLI_ASSOC);
 
-                        // 書籍評分
-                        $sql_book_score = "SELECT avg(score) as avg_score, sum(times) as total_times
-                                            FROM Book_Comment
-                                            WHERE title = '$book->title'
-                                            GROUP BY (title)";
-                        $sql_book_comment = "SELECT comment
-                                                FROM Book_Comment
-                                                WHERE title = '$book->title'";
+                    $data_books = array();
+                    foreach($rows_books as $row_books) { // 一定有至少一本書
+                        $books = new Books();
+
+                        $books->book_ID = $row_books["book_ID"];
+                        $books->book_status = $row_books["book_status"];
+
+                        $data_books[] = $books;
+                    }
+                    $book->books = $data_books;
+
+                    // 書籍評論
+                    $sql_comments = "SELECT *
+                                        FROM Book_Comment JOIN User USING (ID)
+                                        WHERE title = ?";
+                    $stmt_comments = $conn->prepare($sql_comments); 
+                    $stmt_comments->bind_param("s", $row["title"]);
+                    $stmt_comments->execute();
+                    $result_comments = $stmt_comments->get_result();
+                    $rows_comments = $result_comments->fetch_all(MYSQLI_ASSOC);
+
+                    $data_comments = array();
+                    foreach($rows_comments as $row_comments) { // 不一定有人評論
+                        $comments = new Comments();
                         
-                        $result_book_score = mysqli_query($conn, $sql_book_score);
-                        $result_book_comment = mysqli_query($conn, $sql_book_comment);
-                                    
-                        if ($result_book_score && $result_book_comment) {
-                            // 平均評分、總借閱次數
-                            $row = mysqli_fetch_assoc($result_book_score);
+                        $comments->username = $row_comments["username"];
+                        $comments->score = $row_comments["score"];
+                        $comments->comment = $row_comments["comment"];
+                        $comments->comment_date = $row_comments["comment_date"];
+                        $comments->times = $row_comments["times"];
 
-                            $book->score = $row["avg_score"];
-                            $book->times = $row["total_times"];
-
-                            // 全部評論
-                            $comment = array();
-                            while ($row = mysqli_fetch_assoc($result_book_comment)) {
-                                $comment[] = $row["comment"];
-                            }
-
-                            $book->comment = $comment;
-                        }
-                        else { // 查詢失敗，不重要，評分類的顯示未知即可
-                            // Nothing
-                        }
-
-                        $data[] = $book;
+                        $data_comments[] = $comments;
                     }
+                    $book->comments = $data_comments;
+
+                    $data[] = $book;
                 }
                 echo json_encode(array('result' => $data));
             }
