@@ -11,25 +11,42 @@
             is_int((int) $ID) && is_string($new_username) &&
             strlen($new_username) <= 16) {
 
-            $sql = "SELECT username FROM User WHERE ID = '$ID'";
-            $result = mysqli_query($conn, $sql);
+            $sql = "SELECT username
+                    FROM User
+                    WHERE ID = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
 
-            if ($result) { // ID 唯一
-                $row = mysqli_fetch_assoc($result);
-                $old_username = $row["username"];
+            if (count($rows) == 1) { // ID 唯一
+                $old_username = $rows[0]["username"];
 
                 if ($old_username != $new_username) {
                     // 檢查使用者名稱是否重複
-                    $checkUsername = "SELECT * FROM User WHERE username = '$new_username'";
-                    if (mysqli_num_rows(mysqli_query($conn, $checkUsername)) != 0) { // 基本上只為 1
+                    $checkUsername = "SELECT * 
+                                        FROM User 
+                                        WHERE username = ?";
+                    $stmt = $conn->prepare($checkUsername);
+                    $stmt->bind_param("s", $new_username);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+                    if (count($rows) != 0) { // 基本上只為 1
                         echo json_encode(array('__STATUS' => 'ERROR',
                                             'errorMsg' => '使用者名稱已經被人使用過。'));
                         exit;
                     }
 
                     // 更新名稱
-                    $sql = "UPDATE User SET username = '$new_username' WHERE ID = '$ID' and username = '$old_username'";
-                    $result = mysqli_query($conn, $sql);
+                    $sql = "UPDATE User
+                            SET username = ?
+                            WHERE ID = ? and username = ?";
+                    $stmt = $conn->prepare($sql); 
+                    $stmt->bind_param("sis", $new_username, $ID, $old_username);
+                    $result = $stmt->execute();
 
                     if ($result) {
                         // 修改 _SESSION 的 username
@@ -46,6 +63,10 @@
                     echo json_encode(array('__STATUS' => 'ERROR',
                                         'errorMsg' => '新舊名稱不可相同。'));
                 }
+            }
+            else {
+                echo json_encode(array('__STATUS' => 'ERROR',
+                                    'errorMsg' => '資料庫發生不可預期的錯誤！'));
             }
         }
         else {
