@@ -4,6 +4,7 @@
     if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
         $ID = $_SESSION["ID"];
         $username = $_SESSION["username"];
+        $category = $_SESSION["category"];
     }
     else {
         header('location: index.php');
@@ -32,6 +33,7 @@
     </head>
     <body>
         <?php echo "<h1>你好 [".$username."]</h1>"; ?>
+        <?php echo "<h1>[".$category[0]."]</h1>"; ?>
 
         <button type="button" class="btn btn-primary" id="btn">登出</button>
     </body>
