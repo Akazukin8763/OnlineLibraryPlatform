@@ -34,21 +34,44 @@
                     $stmt->bind_param("ii", $book_ID, $ID);
                     $stmt->execute();
                     $result = $stmt->get_result();
-                    $rows = $result->fetch_all(MYSQLI_ASSOC); 
+                    $rows = $result->fetch_all(MYSQLI_ASSOC);
 
                     if (count($rows) != 0) { // 基本上只為 1
+                        $today = date("Y-m-d H:i:s");
+
                         $start_date = $rows[0]["start_date"];
-                        $end_date = date("Y-m-d H:i:s");
+                        $end_date = $today;
                         $deadline = $rows[0]["deadline"];
-                        
                         $punish_date;
+
                         if (strtotime($end_date) < strtotime($deadline)) { // 尚未逾期
                             // Nothing，你很棒
-                            echo json_encode(array('errorMsg' => $deadline));
                         }
                         else { // 逾期
-                            $punish_date = date("Y-m-d H:i:s", strtotime("+7 day")); // 懲處 7 日
+                            // 查詢懲處紀錄
+                            $sql_punish = "SELECT punish_date
+                                            FROM User_Punishment
+                                            WHERE ID = ?";
+                            $stmt = $conn->prepare($sql_punish); 
+                            $stmt->bind_param("i", $ID);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            $rows = $result->fetch_all(MYSQLI_ASSOC);
 
+                            if (count($rows) == 1) { // 有過懲處紀錄
+                                if (strtotime($rows[0]["punish_date"]) < strtotime($today)) { // 懲處紀錄已經過期
+                                    $punish_date = date("Y-m-d H:i:s", strtotime("+7 day")); // 懲處 7 日
+                                }
+                                else { // 懲處紀錄尚未過期
+                                    $punish = $rows[0]["punish_date"]."+7 day";
+                                    $punish_date = date("Y-m-d H:i:s", strtotime($punish)); // 額外懲處 7 日
+                                }
+                            }
+                            else { // 沒有懲處紀錄
+                                $punish_date = date("Y-m-d H:i:s", strtotime("+7 day")); // 懲處 7 日
+                            }
+
+                            // 更新懲處日期
                             $sql_punish = "INSERT INTO User_Punishment (ID, punish_date)
                                             VALUES (?, ?)
                                             ON DUPLICATE KEY UPDATE ID = ?, punish_date = ?";

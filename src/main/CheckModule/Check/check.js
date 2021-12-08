@@ -49,7 +49,7 @@ export function checkOutBook(__ID, __book_ID) {
             book_ID: __book_ID,
         },
         success: function(response) {
-            if (response.start_date && response.end_date && response.deadline && response.punish_date) { // 回傳的 json 中含有 start_date, end_date, deadline, punish_date
+            if (response.start_date && response.end_date && response.deadline) { // 回傳的 json 中含有 start_date, end_date, deadline, (punish_date 可能為 null，表示沒有逾期)
                 console.log(response.start_date);
                 console.log(response.end_date);
                 console.log(response.deadline);
