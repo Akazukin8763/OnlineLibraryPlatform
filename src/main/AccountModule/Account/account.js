@@ -55,7 +55,7 @@ export function login(__email, __password) {
             password: __password,
         },
         success: function(response) {
-            if (response.ID && response.username && response.is_admin) { // 回傳的 json 中含有 ID, username, is_admin
+            if (response.username) { // 回傳的 json 中含有 (ID 可能為 0，表示為遊客), username, (is_admin 可能為 0，表示非管理員)
                 //console.log(response.ID);
                 window.location.href = "welcome.php"; // 導向首頁
             }
