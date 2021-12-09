@@ -1,5 +1,23 @@
 export function viewStatus() {
-
+    $.ajax({
+        type: "POST",
+        url: "SearchViewModule/View/viewStatus.php",
+        dataType: "json",
+        data: {},
+        success: function(response) {
+            if (response.result) { // 回傳的 json 中含有 result
+                response.result.forEach(book => {
+                    console.log("book_ID: " + book.book_ID + ", title: " + book.title + ", image: " + book.image + ", book_status: " + book.book_status + ", order: " + book.order + ", deadline: " + book.deadline);
+                });
+            }
+            else {
+                console.log(response.errorMsg);
+            }
+        },
+        error: function(jqXHR) {
+            console.log(jqXHR);
+        }
+    })
 }
 
 export function viewHistory() {
