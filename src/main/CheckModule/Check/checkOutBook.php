@@ -113,15 +113,15 @@
                                 $sql_title = "SELECT title
                                                 FROM Book
                                                 WHERE book_ID = ?";
-                                $stmt = $conn->prepare($sql_title); 
-                                $stmt->bind_param("i", $book_ID);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-                                $rows = $result->fetch_all(MYSQLI_ASSOC);
+                                $stmt_title = $conn->prepare($sql_title); 
+                                $stmt_title->bind_param("i", $book_ID);
+                                $stmt_title->execute();
+                                $result_title = $stmt_title->get_result();
+                                $rows_title = $result_title->fetch_all(MYSQLI_ASSOC);
 
                                 $content;
-                                if (count($rows) == 1) { // 找的到書名
-                                    $content = "預約的書籍「書籍編號：".$book_ID."、書籍名稱：".$rows[0]["title"]."」已被歸還，可以前去圖書館借閱";
+                                if (count($rows_title) == 1) { // 找的到書名
+                                    $content = "預約的書籍「書籍編號：".$book_ID."、書籍名稱：".$rows_title[0]["title"]."」已被歸還，可以前去圖書館借閱";
                                 }
                                 else { // 找不到書名（理論上不可能）
                                     $content = "預約的書籍「書籍編號：".$book_ID."」已被歸還，可以前去圖書館借閱";
@@ -131,7 +131,7 @@
                                 $sql_notify_reserve = "INSERT INTO Notification (ID, book_ID, notify_date, content)
                                                         VALUES (?, ?, ?, ?)";         
                                 $stmt = $conn->prepare($sql_notify_reserve); 
-                                $stmt->bind_param("iiss", $ID, $book_ID, $today, $content);
+                                $stmt->bind_param("iiss", $rows[0]["ID"], $book_ID, $today, $content);
                                 $result = $stmt->execute();
 
                                 // 不管內容是否通知成功，都不影響
