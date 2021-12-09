@@ -75,7 +75,7 @@
                 echo json_encode(array('result' => $data));
             }
             else {
-                echo json_encode(array('errorMsg' => '查無歷史紀錄。'));
+                echo json_encode(array('errorMsg' => '查無借閱狀態。'));
             }
         }
         else {
