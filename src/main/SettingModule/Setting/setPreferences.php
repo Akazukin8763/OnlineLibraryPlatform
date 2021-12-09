@@ -5,7 +5,7 @@
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         session_start(); 
         $ID = $_SESSION["ID"];
-        $category = $_POST["category"];
+        $category = $_POST["category"]; // 可能為空
         
         $category_list = array("action_and_adventure", "alternate_history", "anthology", "chick_lit", "children",
                                 "classic", "comic_book", "coming_of_age", "crime", "drama",
@@ -30,11 +30,16 @@
             $sql_category = substr($sql_category, 0, -2);
 
             $sql = "UPDATE User_Preferences
-                    SET $sql_category
-                    WHERE ID = '$ID'";
-            $result = mysqli_query($conn, $sql);
+                        SET $sql_category
+                        WHERE ID = ?";
+            $stmt = $conn->prepare($sql); 
+            $stmt->bind_param("i", $ID);
+            $result = $stmt->execute();
 
             if ($result) {
+                // 修改 _SESSION 的 category
+                $_SESSION["category"] = $category;
+
                 echo json_encode(array('__STATUS' => 'SUCCESS'));
             }
             else {
