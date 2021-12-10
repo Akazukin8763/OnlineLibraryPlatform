@@ -5,26 +5,33 @@
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         session_start(); 
         $ID = $_SESSION["ID"];
-        $title = $_POST["title"];
+        $folder = $_POST["folder"];
 
-        if ($ID != null && $title != null &&
-            is_int((int) $ID) && is_string($title) &&
-            strlen($title) <= 64) {
+        if ($ID != null && $folder != null &&
+            is_int((int) $ID) && is_string($folder) &&
+            strlen($folder) <= 16) {
             
+            if (strtoupper($folder) == "DEFAULT") {
+                echo json_encode(array('__STATUS' => 'ERROR',
+                                    'errorMsg' => '不得刪除預設資料夾'));
+                exit;
+            }
+
             $sql = "SELECT *
-                    FROM Book_Detail
-                    WHERE title = ?";
+                    FROM User_Favorite
+                    WHERE ID = ? AND folder = ?";
             $stmt = $conn->prepare($sql); 
-            $stmt->bind_param("s", $title);
+            $stmt->bind_param("is", $ID, $folder);
             $stmt->execute();
             $result = $stmt->get_result();
             $rows = $result->fetch_all(MYSQLI_ASSOC);
 
-            if (count($rows) == 1) {
-                $sql = "DELETE FROM User_Favorite
-                        WHERE ID = ? AND title = ?";
+            if (count($rows) != 0) {
+                $sql = "UPDATE User_Favorite
+                        SET folder = 'DEFAULT'
+                        WHERE ID = ? AND folder = ?";
                 $stmt = $conn->prepare($sql); 
-                $stmt->bind_param("is", $ID, $title);
+                $stmt->bind_param("is", $ID, $folder);
                 $result = $stmt->execute();
 
                 if ($result) {
@@ -32,12 +39,12 @@
                 }
                 else {
                     echo json_encode(array('__STATUS' => 'ERROR',
-                                        'errorMsg' => '移除最愛時發生錯誤。'));
+                                        'errorMsg' => '刪除清單時發生錯誤。'));
                 }
             }
             else {
                 echo json_encode(array('__STATUS' => 'ERROR',
-                                    'errorMsg' => '查無書籍資料。'));
+                                    'errorMsg' => '查無資料夾。'));
             }
         }
         else {
