@@ -90,6 +90,28 @@ export function viewNotification() {
     })
 }
 
+export function viewTrace() {
+    $.ajax({
+        type: "POST",
+        url: "SearchViewModule/View/viewTrace.php",
+        dataType: "json",
+        data: {},
+        success: function(response) {
+            if (response.result) { // 回傳的 json 中含有 result
+                response.result.forEach(book => {
+                    console.log("title: " + book.title + ", book_status: " + book.book_status);
+                });
+            }
+            else {
+                console.log(response.errorMsg);
+            }
+        },
+        error: function(jqXHR) {
+            console.log(jqXHR);
+        }
+    })
+}
+
 export function traceBook() {
-    
+
 }
