@@ -54,7 +54,7 @@ export function viewFavorite() {
                     console.log("folders: " + folders.folder);
 
                     folders.content.forEach(content => {
-                        console.log("title: " + content.title + ", image: " + content.image + ", score: " + content.score + ", comment: " + content.comment + ", times: " + content.times);
+                        console.log("title: " + content.title + ", image: " + content.image + ", score: " + content.score + ", comment: " + content.comment);
                     });
                 });
             }
@@ -91,5 +91,5 @@ export function viewNotification() {
 }
 
 export function traceBook() {
-
+    
 }

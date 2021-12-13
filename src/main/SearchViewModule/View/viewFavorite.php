@@ -12,7 +12,6 @@
         public $image;
         public $score;
         public $comment;
-        public $times;
     }
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -58,7 +57,6 @@
                         $content->image = $row_content["image"];
                         $content->score = $row_content["score"];
                         $content->comment = $row_content["comment"];
-                        $content->times = $row_content["times"];
 
                         $data_content[] = $content;
                     }
