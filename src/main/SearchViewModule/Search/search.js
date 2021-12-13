@@ -34,12 +34,13 @@ export function searchBook(__title, __category) {
                     console.log("title: " + book.title + ", category: " + book.category);
                     console.log("author: " + book.author + ", publisher: " + book.publisher + ", description: " + book.description);
                     console.log("publish_date: " + book.arrive_date + ", arrive_date: " + book.arrive_date);
+                    console.log("times: " + book.times)
 
                     book.books.forEach(bs => {
                         console.log("book_ID: " + bs.book_ID + ", book_status: " + bs.book_status);
                     });
                     book.comments.forEach(bc => {
-                        console.log("username: " + bc.username + ", score: " + bc.score + ", comment: " + bc.comment + ", comment_date: " + bc.comment_date + ", times: " + bc.times);
+                        console.log("username: " + bc.username + ", score: " + bc.score + ", comment: " + bc.comment + ", comment_date: " + bc.comment_date);
                     });
                 });
             }

@@ -11,6 +11,7 @@
         public $publish_date;
         public $arrive_date;
         public $category; // (array)
+        public $times;
 
         public $books; // class Books(array)
         public $comments; // class Comments(array)
@@ -24,7 +25,6 @@
         public $score;
         public $comment;
         public $comment_date;
-        public $times;
     }
 
     if ($_SERVER['REQUEST_METHOD'] == "GET") {
@@ -115,6 +115,24 @@
                     }
                     $book->category = $book_category;
 
+                    // 書籍總借閱次數
+                    $sql_times = "SELECT count(ID) as times
+                                    FROM Book_Trace NATURAL JOIN Book
+                                    WHERE title = ? AND end_date IS NOT NULL
+                                    GROUP BY (title)";
+                    $stmt_times = $conn->prepare($sql_times);
+                    $stmt_times->bind_param("s", $row["title"]);
+                    $stmt_times->execute();
+                    $result_times = $stmt_times->get_result();
+                    $rows_times = $result_times->fetch_all(MYSQLI_ASSOC);
+
+                    if (count($rows_times) != 0) {
+                        $book->times = $rows_times[0]["times"];
+                    }
+                    else {
+                        $book->times = 0;
+                    }
+
                     // 書籍狀態
                     $sql_books = "SELECT *
                                     FROM Book
@@ -154,7 +172,6 @@
                         $comments->score = $row_comments["score"];
                         $comments->comment = $row_comments["comment"];
                         $comments->comment_date = $row_comments["comment_date"];
-                        $comments->times = $row_comments["times"];
 
                         $data_comments[] = $comments;
                     }
