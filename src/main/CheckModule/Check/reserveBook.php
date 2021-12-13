@@ -13,14 +13,16 @@
             // 檢查有無懲處
             $sql = "SELECT punish_date
                     FROM User_Punishment
-                    WHERE ID = '$ID'";
-            $result = mysqli_query($conn, $sql);
+                    WHERE ID = ?";
+            $stmt = $conn->prepare($sql); 
+            $stmt->bind_param("i", $ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
 
-            if (mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_assoc($result);
-
+            if (count($rows) == 1) {
                 $today = date("Y-m-d H:i:s");
-                $punish_date = $row["punish_date"];
+                $punish_date = $rows[0]["punish_date"];
                 
                 if (strtotime($today) < strtotime($punish_date)) {
                     echo json_encode(array('__STATUS' => 'ERROR',
@@ -34,33 +36,41 @@
 
             $sql = "SELECT book_status
                     FROM Book
-                    WHERE book_ID = '$book_ID'";
-            $result = mysqli_query($conn, $sql);
+                    WHERE book_ID = ?";
+            $stmt = $conn->prepare($sql); 
+            $stmt->bind_param("i", $book_ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
 
-            if (mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_assoc($result);
-                $book_status = $row["book_status"]; // 現在書籍狀態
+            if (count($rows) == 1) {
+                $book_status = $rows[0]["book_status"]; // 現在書籍狀態
 
                 // 是否已經預約過，借閱之後才會有 deadline，因此可以借閱後再次預約（處於借閱狀態時）
                 $sql_is_reserve = "SELECT *
                                     FROM Book_Trace
-                                    WHERE book_ID = '$book_ID' AND ID = '$ID' AND deadline IS NULL";
-                $result_is_reserve = mysqli_query($conn, $sql_is_reserve);
+                                    WHERE book_ID = ? AND ID = ? AND deadline IS NULL";
+                $stmt_is_reserve = $conn->prepare($sql_is_reserve); 
+                $stmt_is_reserve->bind_param("ii", $book_ID, $ID);
+                $stmt_is_reserve->execute();
+                $result_is_reserve = $stmt_is_reserve->get_result();
+                $rows_is_reserve = $result_is_reserve->fetch_all(MYSQLI_ASSOC);
 
-                if (mysqli_num_rows($result_is_reserve) == 0) {
+                if (count($rows_is_reserve) == 0) {
+                    $conn->autocommit(false);
+
                     if ($book_status != "BORROW") { // IDLE, RESERVE
                         // 將狀態改成 RESERVE
                         $sql_book = "UPDATE Book
                                         SET book_status = 'RESERVE'
-                                        WHERE book_ID = '$book_ID'";
-                        $result_book = mysqli_query($conn, $sql_book);
+                                        WHERE book_ID = ?";
+                        $stmt_book = $conn->prepare($sql_book); 
+                        $stmt_book->bind_param("i", $book_ID);
+                        $result_book = $stmt_book->execute();
 
-                        if ($result_book) { 
-                            // Nothing
-                        }
-                        else {
-                            echo json_encode(array('__STATUS' => 'ERROR',
-                                                'errorMsg' => '更新書籍狀態時發生錯誤。'));
+                        if (!$result_book) {
+                            $conn->rollback();
+                            echo json_encode(array('__STATUS' => 'ERROR', 'errorMsg' => '更新書籍狀態時發生錯誤。'));
                             exit;
                         }
                     }
@@ -72,13 +82,17 @@
 
                     // 預約書籍，允許多人預約同本書，優先通知最早預約的使用者
                     $sql_book_reserve = "INSERT INTO Book_Trace (book_ID, ID, start_date)
-                                            VALUES ('$book_ID', '$ID', '$today')";
-                    $result_book_reserve = mysqli_query($conn, $sql_book_reserve);
+                                            VALUES (?, ?, ?)";
+                    $stmt_book_reserve = $conn->prepare($sql_book_reserve); 
+                    $stmt_book_reserve->bind_param("iis", $book_ID, $ID, $today);
+                    $result_book_reserve = $stmt_book_reserve->execute();
 
                     if ($result_book_reserve) {
+                        $conn->commit();
                         echo json_encode(array('__STATUS' => 'SUCCESS'));
                     }
                     else {
+                        $conn->rollback();
                         echo json_encode(array('__STATUS' => 'ERROR',
                                             'errorMsg' => '預約書籍時發生錯誤。'));
                     }
