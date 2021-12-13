@@ -6,6 +6,8 @@
         $ID = $_POST["ID"];
         $book_ID = $_POST["book_ID"];
         
+        $conn->autocommit(false);
+
         if ($ID != null && $book_ID != null &&
             is_int((int) $ID) && is_int((int) $book_ID)) {
 
@@ -87,10 +89,11 @@
                             $stmt->bind_param("ssii", $start_date, $deadline, $book_ID, $ID);
                             $result = $stmt->execute();
         
-                            if ($result) { // 更新日期成功，不做任何事
+                            if ($result && $stmt->affected_rows == 1) { // 更新日期成功，不做任何事
                                 // Nothing
                             }
                             else {
+                                $conn->rollback();
                                 echo json_encode(array('errorMsg' => '借閱書籍時發生錯誤'));
                                 exit;
                             }
@@ -104,10 +107,11 @@
                         $stmt->bind_param("iiss", $book_ID, $ID, $start_date, $deadline);
                         $result = $stmt->execute();
     
-                        if ($result) { // 更新日期成功，不做任何事
+                        if ($result && $stmt->affected_rows == 1) { // 更新日期成功，不做任何事
                             // Nothing
                         }
                         else {
+                            $conn->rollback();
                             echo json_encode(array('errorMsg' => '借閱書籍時發生錯誤'));
                             exit;
                         }
@@ -121,11 +125,13 @@
                     $stmt->bind_param("i", $book_ID);
                     $result = $stmt->execute();
 
-                    if ($result) {
+                    if ($result && $stmt->affected_rows == 1) {
+                        $conn->commit();
                         echo json_encode(array('start_date' => $start_date, 
                                                 'deadline' => $deadline));
                     }
                     else {
+                        $conn->rollback();
                         echo json_encode(array('errorMsg' => '借閱書籍時發生錯誤'));
                     }
                 }

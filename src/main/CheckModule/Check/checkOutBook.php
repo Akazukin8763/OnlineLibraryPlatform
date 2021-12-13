@@ -6,6 +6,8 @@
         $ID = $_POST["ID"];
         $book_ID = $_POST["book_ID"];
         
+        $conn->autocommit(false);
+
         if ($ID != null && $book_ID != null &&
             is_int((int) $ID) && is_int((int) $book_ID)) {
 
@@ -76,10 +78,11 @@
                             $stmt->bind_param("isis", $ID, $punish_date, $ID, $punish_date);
                             $result = $stmt->execute();
 
-                            if ($result) {
+                            if ($result && $stmt->affected_rows == 1) {
                                 // Nothing
                             }
                             else {
+                                $conn->rollback();
                                 echo json_encode(array('errorMsg' => '更新懲處時發生錯誤。'));
                                 exit;
                             }
@@ -93,7 +96,7 @@
                         $stmt->bind_param("sii", $end_date, $book_ID, $ID);
                         $result = $stmt->execute();
 
-                        if ($result) {
+                        if ($result && $stmt->affected_rows == 1) {
                             // 檢查後續有無人預約
                             $sql_is_reserve = "SELECT *
                                                 FROM Book_Trace
@@ -134,15 +137,14 @@
                                 $stmt->bind_param("iiss", $rows[0]["ID"], $book_ID, $today, $content);
                                 $result = $stmt->execute();
 
-                                // 不管內容是否通知成功，都不影響
-                                /*
-                                if ($result) { // 通知成功
+                                if ($result && $stmt->affected_rows == 1) { // 通知成功
                                     // Nothing
                                 }
                                 else { // 通知失敗
-                                    // Nothing
+                                    $conn->rollback();
+                                    echo json_encode(array('errorMsg' => '傳送通知時發生錯誤。'));
+                                    exit;
                                 }
-                                */
                             }
                             else { // 沒人預約
                                 $new_book_status = 'IDLE';
@@ -155,17 +157,20 @@
                             $stmt->bind_param("si", $new_book_status, $book_ID);
                             $result = $stmt->execute();
 
-                            if ($result) {
+                            if ($result && $stmt->affected_rows == 1) {
+                                $conn->commit();
                                 echo json_encode(array('start_date' => $start_date,
                                                         'end_date' => $end_date,
                                                         'deadline' => $deadline,
                                                         'punish_date' => $punish_date));
                             }
                             else {
+                                $conn->rollback();
                                 echo json_encode(array('errorMsg' => '更新書籍狀態時發生錯誤。'));
                             }
                         }
                         else {
+                            $conn->rollback();
                             echo json_encode(array('errorMsg' => '歸還書籍時發生錯誤。'));
                         }
                     }
