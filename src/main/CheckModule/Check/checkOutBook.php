@@ -124,17 +124,19 @@
 
                                 $content;
                                 if (count($rows_title) == 1) { // 找的到書名
-                                    $content = "預約的書籍「書籍編號：".$book_ID."、書籍名稱：".$rows_title[0]["title"]."」已被歸還，可以前去圖書館借閱";
+                                    $content = "預約的書籍「".$rows_title[0]["title"]."（book_ID：".$book_ID."）」已被歸還，可以前去圖書館借閱。";
                                 }
                                 else { // 找不到書名（理論上不可能）
-                                    $content = "預約的書籍「書籍編號：".$book_ID."」已被歸還，可以前去圖書館借閱";
+                                    $conn->rollback();
+                                    echo json_encode(array('errorMsg' => '查無書籍資料。'));
+                                    exit;
                                 }
 
                                 // 通知下一位預約者
-                                $sql_notify_reserve = "INSERT INTO Notification (ID, book_ID, notify_date, content)
-                                                        VALUES (?, ?, ?, ?)";         
+                                $sql_notify_reserve = "INSERT INTO Notification (ID, notify_date, content)
+                                                        VALUES (?, ?, ?)";         
                                 $stmt = $conn->prepare($sql_notify_reserve); 
-                                $stmt->bind_param("iiss", $rows[0]["ID"], $book_ID, $today, $content);
+                                $stmt->bind_param("iss", $rows[0]["ID"], $today, $content);
                                 $result = $stmt->execute();
 
                                 if ($result && $stmt->affected_rows == 1) { // 通知成功
