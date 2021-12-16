@@ -26,7 +26,7 @@
         
         if ($title != null && $image != null && $author != null && $publisher != null && $description != null && $publish_date != null && $arrive_date != null && $category != null &&
             is_string($title) && is_string($image) && is_string($author) && is_string($publisher) && is_string($description) && is_string($publish_date) && is_string($arrive_date) && is_array($category) &&
-            strlen($title) <= 64 && strlen($image) <= 256 && strlen($author) <= 16 && strlen($publisher) <= 16 && strlen($description) <= 512) {
+            strlen($title) <= 64 && strlen($image) <= 256 && strlen($author) <= 64 && strlen($publisher) <= 64 && strlen($description) <= 512) {
             
                 $sql = "SELECT * 
                         FROM Book_Detail

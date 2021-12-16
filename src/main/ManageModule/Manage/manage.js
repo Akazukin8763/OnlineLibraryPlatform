@@ -7,11 +7,11 @@ export function uploadBook(__title, __image, __author, __publisher, __descriptio
         console.log('__image 長度超出限制。');
         return;
     }
-    else if (!(__author.length <= 16)) {
+    else if (!(__author.length <= 64)) {
         console.log('__author 長度超出限制。');
         return;
     }
-    else if (!(__publisher.length <= 16)) {
+    else if (!(__publisher.length <= 64)) {
         console.log('__publisher 長度超出限制。');
         return;
     }
@@ -60,6 +60,38 @@ export function uploadBook(__title, __image, __author, __publisher, __descriptio
     })
 }
 
+export function deleteBook(__book_ID) {
+    if (isNaN(parseInt(__book_ID))) {
+        console.log('__book_ID 並非整數。');
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "ManageModule/Manage/deleteBook.php",
+        dataType: "json",
+        data: {
+            book_ID: __book_ID,
+        },
+        success: function(response) {
+            if (response.__STATUS) { // 回傳的 json 中含有 __STATUS
+                if (response.__STATUS == "SUCCESS") {
+                    console.log(response.__STATUS);
+                }
+                else {
+                    console.log(response.__STATUS + ": " + response.errorMsg);
+                }
+            }
+            else {
+                console.log(response.errorMsg);
+            }
+        },
+        error: function(jqXHR) {
+            console.log(jqXHR);
+        }
+    })
+}
+
 export function editBook(__old_title, __title, __image, __author, __publisher, __description, __publish_date, __arrive_date, __category) {
     if (!(__old_title.length <= 64)) {
         console.log('__old_title 長度超出限制。');
@@ -73,11 +105,11 @@ export function editBook(__old_title, __title, __image, __author, __publisher, _
         console.log('__image 長度超出限制。');
         return;
     }
-    else if (!(__author.length <= 16)) {
+    else if (!(__author.length <= 64)) {
         console.log('__author 長度超出限制。');
         return;
     }
-    else if (!(__publisher.length <= 16)) {
+    else if (!(__publisher.length <= 64)) {
         console.log('__publisher 長度超出限制。');
         return;
     }
