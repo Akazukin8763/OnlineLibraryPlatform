@@ -3,8 +3,6 @@
     $conn = require_once "../../config.php";
 
     class Notification {
-        public $book_ID;
-        public $title;
         public $notify_date;
         public $content;
     }
@@ -17,7 +15,7 @@
             is_int((int) $ID)) {
             
             $sql = "SELECT *
-                    FROM Notification NATURAL JOIN Book
+                    FROM Notification
                     WHERE ID = ?
                     ORDER BY notify_date DESC";
             $stmt = $conn->prepare($sql); 
@@ -32,8 +30,6 @@
                     // 所有通知
                     $notification = new Notification();
                     
-                    $notification->book_ID = $row["book_ID"];
-                    $notification->title = $row["title"];
                     $notification->notify_date = $row["notify_date"];
                     $notification->content = $row["content"];
                     
