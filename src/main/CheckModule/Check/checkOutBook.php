@@ -111,6 +111,7 @@
                             $new_book_status = 'IDLE';
                             if (count($rows) != 0) { // 有人預約
                                 $new_book_status = 'RESERVE';
+                                $next_ID = $rows[0]["ID"];
 
                                 // 查詢書籍名稱
                                 $sql_title = "SELECT title
@@ -124,7 +125,7 @@
 
                                 $content;
                                 if (count($rows_title) == 1) { // 找的到書名
-                                    $content = "預約的書籍「".$rows_title[0]["title"]."（book_ID：".$book_ID."）」已被歸還，可以前去圖書館借閱。";
+                                    $content = "您預約的書籍「".$rows_title[0]["title"]."（book_ID：".$book_ID."）」已被歸還，需在 3 日內前去圖書館借閱，否則取消預約資格。";
                                 }
                                 else { // 找不到書名（理論上不可能）
                                     $conn->rollback();
@@ -136,7 +137,7 @@
                                 $sql_notify_reserve = "INSERT INTO Notification (ID, notify_date, content)
                                                         VALUES (?, ?, ?)";         
                                 $stmt = $conn->prepare($sql_notify_reserve); 
-                                $stmt->bind_param("iss", $rows[0]["ID"], $today, $content);
+                                $stmt->bind_param("iss", $next_ID, $today, $content);
                                 $result = $stmt->execute();
 
                                 if ($result && $stmt->affected_rows == 1) { // 通知成功
@@ -145,6 +146,23 @@
                                 else { // 通知失敗
                                     $conn->rollback();
                                     echo json_encode(array('errorMsg' => '傳送通知時發生錯誤。'));
+                                    exit;
+                                }
+
+                                // 紀錄通知期限
+                                $sql_notify_date = "UPDATE Book_Trace
+                                                    SET notify_date = ?
+                                                    WHERE ID = ? AND book_ID = ? AND deadline IS NULL AND notify_date IS NULL";
+                                $stmt_notify_date = $conn->prepare($sql_notify_date);
+                                $stmt_notify_date->bind_param("sii", $today, $next_ID, $book_ID);
+                                $result_notify_date = $stmt_notify_date->execute();
+
+                                if ($result_notify_date && $stmt_notify_date->affected_rows == 1) {
+                                    // Nothing
+                                }
+                                else {
+                                    $conn->rollback();
+                                    echo json_encode(array('errorMsg' => '更新通知日期時發生錯誤。'));
                                     exit;
                                 }
                             }
