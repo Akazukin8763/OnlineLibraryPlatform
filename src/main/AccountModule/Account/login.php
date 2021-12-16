@@ -14,6 +14,8 @@
                                 "romance", "satire", "science_fiction", "short_story", "suspense",
                                 "thriller", "western", "young_adult");
 
+        $conn->autocommit(false);
+
         if ($email != null && $password != null &&
             is_string($email) && is_string($password) &&
             strlen($email) <= 64 && 6 <= strlen($password) && strlen($password) <= 16) {
@@ -40,46 +42,58 @@
                 $stmt->bind_param("ss", $email, $password);
                 $result = $stmt->execute();
 
-                if ($result) {
-                    // 獲取偏好設定
-                    $sql = "SELECT *
-                            FROM User_Preferences
-                            WHERE ID = ?";
-                    $stmt = $conn->prepare($sql); 
-                    $stmt->bind_param("i", $ID);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $rows = $result->fetch_all(MYSQLI_ASSOC);
+                if (!$result) {
+                    $conn->rollback();
+                    echo json_encode(array('errorMsg' => '狀態更新時發生錯誤。'));
+                    exit;
+                }
 
-                    if (count($rows) == 1) {
-                        $category = array();
-                        foreach ($category_list as $value) {
-                            if ($rows[0][$value] == 0) {
-                                $category[] = $value;
-                            }
+                // 確認使用者有無預約書籍且可以前去借閱，且超過 3 日預約期限
+                require_once "../../__check_reserve.php";
+
+                if (!check_reserve($conn, $ID)) {
+                    $conn->rollback();
+                    echo json_encode(array('errorMsg' => '登入設定時發生錯誤。'));
+                    exit;
+                }
+                
+                // 獲取偏好設定
+                $sql = "SELECT *
+                        FROM User_Preferences
+                        WHERE ID = ?";
+                $stmt = $conn->prepare($sql); 
+                $stmt->bind_param("i", $ID);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+                if (count($rows) == 1) {
+                    $category = array();
+                    foreach ($category_list as $value) {
+                        if ($rows[0][$value] == 0) {
+                            $category[] = $value;
                         }
+                    }
 
-                        session_start();
-        
-                        // _Session 紀錄登入狀態
-                        $_SESSION["loggedin"] = true;
-                        // _Session 紀錄使用者資料
-                        $_SESSION["ID"] = $ID;
-                        $_SESSION["username"] = $username;
-                        $_SESSION["is_admin"] = $is_admin;
-                        $_SESSION["category"] = $category;
-        
-                        echo json_encode(array('ID' => $ID,
-                                                'username' => $username,
-                                                'is_admin' => $is_admin,
-                                                'category' => $category));
-                    }
-                    else {
-                        echo json_encode(array('errorMsg' => '獲取資料時發生錯誤。'));
-                    }
+                    session_start();
+    
+                    // _Session 紀錄登入狀態
+                    $_SESSION["loggedin"] = true;
+                    // _Session 紀錄使用者資料
+                    $_SESSION["ID"] = $ID;
+                    $_SESSION["username"] = $username;
+                    $_SESSION["is_admin"] = $is_admin;
+                    $_SESSION["category"] = $category;
+
+                    $conn->commit();
+                    echo json_encode(array('ID' => $ID,
+                                            'username' => $username,
+                                            'is_admin' => $is_admin,
+                                            'category' => $category));
                 }
                 else {
-                    echo json_encode(array('errorMsg' => '狀態更新時發生錯誤。'));
+                    $conn->rollback();
+                    echo json_encode(array('errorMsg' => '獲取資料時發生錯誤。'));
                 }
             }
             else {
