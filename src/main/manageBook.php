@@ -68,6 +68,13 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
+
+            .navhref {
+                color: #BBBBBB;
+            }
+            .navhref:hover {
+                color: #555555;
+            }
         </style>
         
         <script type="module">
@@ -360,11 +367,11 @@
                     </div>
                     <div>
                         <i class="glyphicon glyphicon-menu-right" style="color: #FFA042;"></i>
-                        <a>借閱書籍</a>
+                        <label class="navhref" onclick="window.location.href='checkBook.php'">借閱書籍</label>
                     </div>
                     <div>
                         <i class="glyphicon glyphicon-menu-right" style="color: #FFA042;"></i>
-                        <a>發布公告</a>
+                        <label class="navhref" onclick="window.location.href='announcement.php'">發布公告</label>
                     </div>
                 </div>
                 
@@ -441,7 +448,7 @@
                             <div>
                                 <label for="uploadDescription" class="form-label" required="required">Description：</label>
                                 <span id="uploadDescriptionERR" style="color:red"></span>
-                                <textarea type="text" class="form-control" id="uploadDescription" name="uploadDescription"></textarea>
+                                <textarea type="text" class="form-control" id="uploadDescription" name="uploadDescription" rows="5"></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6"> 
@@ -510,7 +517,7 @@
                             <div>
                                 <label for="editDescription" class="form-label" required="required">Description：</label>
                                 <span id="editDescriptionERR" style="color:red"></span>
-                                <textarea type="text" class="form-control" id="editDescription" name="editDescription"></textarea>
+                                <textarea type="text" class="form-control" id="editDescription" name="editDescription" rows="5"></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6"> 
