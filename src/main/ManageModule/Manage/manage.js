@@ -1,34 +1,55 @@
 export function uploadBook(__title, __image, __author, __publisher, __description, __publish_date, __arrive_date, __category) {
-    if (!(__title.length <= 64)) {
-        console.log('__title 長度超出限制。');
+    if (!(0 < __title.length && __title.length <= 64)) {
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadTitleERR").offset().top }, 500);
+        if (!(0 < __title.length)) $("#uploadTitleERR").html("請輸入書籍名稱。");
+        else $("#uploadTitleERR").html("長度需小於 64 個字元。");
+        $("#uploadTitleERR").focus();
         return;
     }
-    else if (!(__image.length <= 256)) {
-        console.log('__image 長度超出限制。');
+    else if (!(0 < __image.length && __image.length <= 256)) {
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadImageERR").offset().top }, 500);
+        if (!(0 < __image.length)) $("#uploadImageERR").html("請輸入圖片連結。");
+        else $("#uploadImageERR").html("長度需小於 256 個字元。");
+        $("#uploadImageERR").focus();
         return;
     }
-    else if (!(__author.length <= 64)) {
-        console.log('__author 長度超出限制。');
+    else if (!(0 < __author.length && __author.length <= 64)) {
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadAuthorERR").offset().top }, 500);
+        if (!(0 < __author.length)) $("#uploadAuthorERR").html("請輸入作者名稱。");
+        else $("#uploadAuthorERR").html("長度需小於 64 個字元。");
+        $("#uploadAuthorERR").focus();
         return;
     }
-    else if (!(__publisher.length <= 64)) {
-        console.log('__publisher 長度超出限制。');
+    else if (!(0 < __publisher.length && __publisher.length <= 64)) {
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadPublisherERR").offset().top }, 500);
+        if (!(0 < __publisher.length)) $("#uploadPublisherERR").html("請輸入出版商名稱。");
+        else $("#uploadPublisherERR").html("長度需小於 64 個字元。");
+        $("#uploadPublisherERR").focus();
         return;
     }
-    else if (!(__description.length <= 512)) {
-        console.log('__description 長度超出限制。');
+    else if (!(0 < __description.length && __description.length <= 512)) {
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadDescriptionERR").offset().top }, 500);
+        if (!(0 < __description.length)) $("#uploadDescriptionERR").html("請輸入書籍簡介。");
+        else $("#uploadDescriptionERR").html("長度需小於 512 個字元。");
+        $("#uploadDescriptionERR").focus();
         return;
     }
     else if (isNaN(Date.parse(__publish_date))) {
-        console.log('__publish_date 並非標準日期和時間格式字串。');
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadPublishDateERR").offset().top }, 500);
+        $("#uploadPublishDateERR").html("日期尚未填寫。");
+        $("#uploadPublishDateERR").focus();
         return;
     }
     else if (isNaN(Date.parse(__arrive_date))) {
-        console.log('__arrive_date 並非標準日期和時間格式字串。');
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadArriveDateERR").offset().top }, 500);
+        $("#uploadArriveDateERR").html("日期尚未填寫。");
+        $("#uploadArriveDateERR").focus();
         return;
     }
-    else if (!Array.isArray(__category)) {
-        console.log('__category 並非陣列。');
+    else if (__category.length == 0) {
+        $("#modalUploadBook").animate({ scrollTop: $("#uploadCategoryERR").offset().top }, 500);
+        $("#uploadCategoryERR").html("請至少勾選一項類別。");
+        $("#uploadCategoryERR").focus();
         return;
     }
 
@@ -48,14 +69,20 @@ export function uploadBook(__title, __image, __author, __publisher, __descriptio
         },
         success: function(response) {
             if (response.book_ID) { // 回傳的 json 中含有 book_ID
-                console.log(response.book_ID);
+                $("#btn_closeUpload").trigger("click");
+                $("#btn_clearUpload").trigger("click");
+
+                $('#searchTitle').val('');
+                $("#btn_searchBook").trigger("click");
             }
             else {
-                console.log(response.errorMsg);
+                //console.log(response.errorMsg);
+                $("#uploadERR").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#uploadERR").html("伺服器連線錯誤。");
         }
     })
 }
@@ -93,40 +120,57 @@ export function deleteBook(__book_ID) {
 }
 
 export function editBook(__old_title, __title, __image, __author, __publisher, __description, __publish_date, __arrive_date, __category) {
-    if (!(__old_title.length <= 64)) {
-        console.log('__old_title 長度超出限制。');
+    if (!(0 < __title.length && __title.length <= 64)) {
+        $("#modalEditBook").animate({ scrollTop: $("#editTitleERR").offset().top }, 500);
+        if (!(0 < __title.length)) $("#editTitleERR").html("請輸入書籍名稱。");
+        else $("#editTitleERR").html("長度需小於 64 個字元。");
+        $("#editTitleERR").focus();
         return;
     }
-    else if (!(__title.length <= 64)) {
-        console.log('__title 長度超出限制。');
+    else if (!(0 < __image.length && __image.length <= 256)) {
+        $("#modalEditBook").animate({ scrollTop: $("#editImageERR").offset().top }, 500);
+        if (!(0 < __image.length)) $("#editImageERR").html("請輸入圖片連結。");
+        else $("#editImageERR").html("長度需小於 256 個字元。");
+        $("#editImageERR").focus();
         return;
     }
-    else if (!(__image.length <= 256)) {
-        console.log('__image 長度超出限制。');
+    else if (!(0 < __author.length && __author.length <= 64)) {
+        $("#modalEditBook").animate({ scrollTop: $("#editAuthorERR").offset().top }, 500);
+        if (!(0 < __author.length)) $("#editAuthorERR").html("請輸入作者名稱。");
+        else $("#editAuthorERR").html("長度需小於 64 個字元。");
+        $("#editAuthorERR").focus();
         return;
     }
-    else if (!(__author.length <= 64)) {
-        console.log('__author 長度超出限制。');
+    else if (!(0 < __publisher.length && __publisher.length <= 64)) {
+        $("#modalEditBook").animate({ scrollTop: $("#editPublisherERR").offset().top }, 500);
+        if (!(0 < __publisher.length)) $("#editPublisherERR").html("請輸入出版商名稱。");
+        else $("#editPublisherERR").html("長度需小於 64 個字元。");
+        $("#editPublisherERR").focus();
         return;
     }
-    else if (!(__publisher.length <= 64)) {
-        console.log('__publisher 長度超出限制。');
-        return;
-    }
-    else if (!(__description.length <= 512)) {
-        console.log('__description 長度超出限制。');
+    else if (!(0 < __description.length && __description.length <= 512)) {
+        $("#modalEditBook").animate({ scrollTop: $("#editDescriptionERR").offset().top }, 500);
+        if (!(0 < __description.length)) $("#editDescriptionERR").html("請輸入書籍簡介。");
+        else $("#editDescriptionERR").html("長度需小於 512 個字元。");
+        $("#editDescriptionERR").focus();
         return;
     }
     else if (isNaN(Date.parse(__publish_date))) {
-        console.log('__publish_date 並非標準日期和時間格式字串。');
+        $("#modalEditBook").animate({ scrollTop: $("#editPublishDateERR").offset().top }, 500);
+        $("#editPublishDateERR").html("日期尚未填寫。");
+        $("#editPublishDateERR").focus();
         return;
     }
     else if (isNaN(Date.parse(__arrive_date))) {
-        console.log('__arrive_date 並非標準日期和時間格式字串。');
+        $("#modalEditBook").animate({ scrollTop: $("#editArriveDateERR").offset().top }, 500);
+        $("#editArriveDateERR").html("日期尚未填寫。");
+        $("#editArriveDateERR").focus();
         return;
     }
-    else if (!Array.isArray(__category)) {
-        console.log('__category 並非陣列。');
+    else if (__category.length == 0) {
+        $("#modalEditBook").animate({ scrollTop: $("#editCategoryERR").offset().top }, 500);
+        $("#editCategoryERR").html("請至少勾選一項類別。");
+        $("#editCategoryERR").focus();
         return;
     }
 
@@ -148,18 +192,23 @@ export function editBook(__old_title, __title, __image, __author, __publisher, _
         success: function(response) {
             if (response.__STATUS) { // 回傳的 json 中含有 __STATUS
                 if (response.__STATUS == "SUCCESS") {
-                    console.log(response.__STATUS);
+                    //console.log(response.__STATUS);
+                    $("#btn_closeEdit").trigger("click");
+                    $("#btn_searchBook").trigger("click");
                 }
                 else {
-                    console.log(response.__STATUS + ": " + response.errorMsg);
+                    //console.log(response.__STATUS + ": " + response.errorMsg);
+                    $("#editERR").html(response.errorMsg);
                 }
             }
             else {
-                console.log(response.errorMsg);
+                //console.log(response.errorMsg);
+                $("#editERR").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#editERR").html("伺服器連線錯誤。");
         }
     })
 }
