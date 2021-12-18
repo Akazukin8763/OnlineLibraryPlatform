@@ -34,7 +34,8 @@
                     }
                     else {
                         $conn->rollback();
-                        echo json_encode(array('errorMsg' => '傳送通知時發生錯誤。'));
+                        echo json_encode(array('__STATUS' => 'ERROR',
+                                            'errorMsg' => '傳送通知時發生錯誤。'));
                         exit;
                     }
                 }
