@@ -118,6 +118,22 @@
                         return false;
                     }
                 }
+                else { // 不存在下一位使用者，改為 IDLE
+                    $sql_book_status = "UPDATE Book
+                                        SET book_status = 'IDLE'
+                                        WHERE book_ID = ?";
+                    $stmt_book_status = $conn->prepare($sql_book_status);
+                    $stmt_book_status->bind_param("i", $book_ID);
+                    $result_book_status = $stmt_book_status->execute();
+
+                    if ($result_book_status && $stmt_book_status->affected_rows == 1) {
+                        // Nothing
+                    }
+                    else {
+                        $conn->rollback();
+                        return false;
+                    }
+                }
             }
         }
         return true;
