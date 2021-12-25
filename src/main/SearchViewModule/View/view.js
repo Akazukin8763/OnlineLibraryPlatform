@@ -50,12 +50,109 @@ export function viewFavorite() {
         data: {},
         success: function(response) {
             if (response.result) { // 回傳的 json 中含有 result
+                var favorite = $("#favoriteFolder");
+                favorite.empty();
+
+                var folderNums = 0;
+                var f = $("#currentList");
+                var l = $('<input id="currentListLength"></input>');
+                f.empty();
+                l.appendTo(f);
+
                 response.result.forEach(folders => {
-                    console.log("folders: " + folders.folder);
+                    // thumbnail
+                    var thumbnail = $('<div class="thumbnail"></div>');
+                    
+                    // folder
+                    var fold = $('<label class="glyphicon glyphicon-minus" style="color: #9C9C9C;"></label>');
+                    var folderName = $('<label></label>');
+                    folderName.html("&nbsp;" + folders.folder);
+
+                    var v = $('<input id="currentList'+ folderNums++ +'"></input>');
+                    v.val(folders.folder);
+                    v.appendTo(f);
+                    l.val(folderNums);
+
+                    // detail
+                    var ul = $('<ul class="nav"></ul>');
+                    folders.content.forEach(content => {
+                        var li = $('<li style="padding-left: 2%;"></li>');
+                        var span = $('<span></span>');
+
+                        var edit = $('<label class="glyphicon glyphicon-cog" style="color: #9C9C9C;"></label>');
+                        var title = $('<label></label>');
+                        title.html("&nbsp;" + content.title);
+
+                        edit.click(function() {
+                            $("#modalEditList").modal("show");
+
+                            $("#editListHeader").html("Edit：" + content.title);
+                            $("#selectEdit").empty();
+                            $("#editListERR").html("");
+
+                            $("#editBookTitle").val(content.title);
+                            $("#editBookFolder").val(folders.folder);
+
+                            // Set Content
+                            var status = $("#editStatus").val();
+                            if (status == "update") {
+                                var edit = $("#selectEdit");
+                                edit.empty();
+
+                                $('<label>Move \"' + $("#editBookTitle").val() + '\" from \"' + $("#editBookFolder").val() + '\" to&nbsp;</label>').appendTo(edit);
+                
+                                var length = $("#currentListLength").val();
+                                var selection = $('<select id="selectListName"></select>');
+                                for (let i = 0; i < length; i++) {
+                                    var v = $('#currentList' + i + '').val();
+                                    $('<option value="' + v + '">' + v + '</option>').appendTo(selection);
+                                }
+                                selection.appendTo(edit);
+                            }
+                            else if (status == "remove") {
+                                var edit = $("#selectEdit");
+                                edit.empty();
+                                $('<label>Remove \"' + content.title + '\" from \"' + folders.folder + '\"</label>').appendTo(edit);
+                            }
+                            else if (status == "delete") {
+                                var edit = $("#selectEdit");
+                                edit.empty();
+                                $('<label>Delete folder \"' + folders.folder + '\" and move all book to "DEFAULT"</label>').appendTo(edit);
+                            }
+                        });
+
+                        edit.appendTo(span);
+                        title.appendTo(span);
+                        span.appendTo(li);
+                        li.appendTo(ul);
+                    });
+
+                    // combine
+                    fold.appendTo(thumbnail);
+                    folderName.appendTo(thumbnail);
+                    ul.appendTo(thumbnail);
+                    thumbnail.appendTo(favorite);
+
+                    let flag = true;
+                    fold.click(function() {
+                        if (flag) {
+                            fold.removeClass("glyphicon-minus");
+                            fold.addClass("glyphicon-plus");
+                            ul.css({ "display": "none" });
+                        }
+                        else {
+                            fold.removeClass("glyphicon-plus");
+                            fold.addClass("glyphicon-minus");
+                            ul.css({ "display": "block" });
+                        }
+                        flag = !flag;
+                    });
+
+                    /*console.log("folders: " + folders.folder);
 
                     folders.content.forEach(content => {
                         console.log("title: " + content.title + ", image: " + content.image + ", score: " + content.score + ", comment: " + content.comment);
-                    });
+                    });*/
                 });
             }
             else {
