@@ -228,20 +228,15 @@
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Logo</a>
+                    <a class="navbar-brand" href="welcome.php"><span class="glyphicon glyphicon-book"></span> Online Library</a>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#about">ABOUT</a></li>
-                        <li><a href="#services">SERVICES</a></li>
-                        <li><a href="#portfolio">PORTFOLIO</a></li>
-                        <li><a href="#pricing">PRICING</a></li>
-                        <li><a href="#contact">CONTACT</a></li>
+                        <li><a href="welcome.php#about">ABOUT</a></li>
+                        <li><a href="welcome.php#popular">POPULAR</a></li>
+                        <li><a href="welcome.php#services">SERVICES</a></li>
+                        <li><a href="welcome.php#pricing">PRICING</a></li>
+                        <li><a href="welcome.php#contact">CONTACT</a></li>
                     </ul>
                 </div>
             </div>
@@ -306,8 +301,8 @@
                                 <table class="table table-bordered" style="table-layout: fixed;">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th scope="col">Book ID</th>
-                                            <th scope="col" style="width: 70%;">Book Status</th>
+                                            <th scope="col" style="width: 25%;">Book ID</th>
+                                            <th scope="col">Book Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="book_status">
