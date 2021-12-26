@@ -27,10 +27,10 @@ export function uploadBook(__title, __image, __author, __publisher, __descriptio
         $("#uploadPublisher").focus();
         return;
     }
-    else if (!(0 < __description.length && __description.length <= 512)) {
+    else if (!(0 < __description.length && __description.length <= 1024)) {
         $("#modalUploadBook").animate({ scrollTop: $("#uploadDescriptionERR").offset().top }, 500);
         if (!(0 < __description.length)) $("#uploadDescriptionERR").html("請輸入書籍簡介。");
-        else $("#uploadDescriptionERR").html("長度需小於 512 個字元。");
+        else $("#uploadDescriptionERR").html("長度需小於 1024 個字元。");
         $("#uploadDescription").focus();
         return;
     }
@@ -148,10 +148,10 @@ export function editBook(__old_title, __title, __image, __author, __publisher, _
         $("#editPublisher").focus();
         return;
     }
-    else if (!(0 < __description.length && __description.length <= 512)) {
+    else if (!(0 < __description.length && __description.length <= 1024)) {
         $("#modalEditBook").animate({ scrollTop: $("#editDescriptionERR").offset().top }, 500);
         if (!(0 < __description.length)) $("#editDescriptionERR").html("請輸入書籍簡介。");
-        else $("#editDescriptionERR").html("長度需小於 512 個字元。");
+        else $("#editDescriptionERR").html("長度需小於 1024 個字元。");
         $("#editDescription").focus();
         return;
     }
