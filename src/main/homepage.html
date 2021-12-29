@@ -30,7 +30,7 @@
     margin-bottom: 30px;
   }
   .jumbotron {
-    background-image: url("lib.jpg");
+    background-image: url("");
     background-color: #FFA042;
     color: #fff;
     padding: 150px 25px;
@@ -190,6 +190,15 @@
   }
   </style>
 </head>
+<script>
+    function start(){
+        document.getElementById("search").addEventListener("click",change,false);
+    }
+    function change(){
+        document.location.href="search.html?title=" + document.getElementById("name").value;
+    }
+    window.addEventListener("load",start,false);
+</script>
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
 
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -215,16 +224,16 @@
 </nav>
 
 <div class="jumbotron text-center">
-    <h1>XXX Library</h1>
+    <h1>垮黑圖書館</h1>
     <p>Online Library Platform</p>
-    <form>
-        <div class="input-group">
-            <input type="text" class="form-control" size="50" placeholder="Please enter the title of the book" required>
-            <div class="input-group-btn">
-                <button type="button" class="btn btn-danger">Search</button>
-            </div>
+    
+    <div class="input-group">
+        <input type="text" class="form-control" id= "name" size="50" placeholder="Please enter the title of the book" required>
+        <div class="input-group-btn">
+            <button type="button" class="btn btn-danger" id="search">Search</button>
         </div>
-    </form>
+    </div>
+    
 </div>
 
 
@@ -280,12 +289,12 @@
         <div class="col-sm-6">
             <span class="glyphicon glyphicon-user logo-small"></span>
             <h4>State</h4>
-            <p>I just want to makes it cool</p>
+            <p>View personal status</p>
         </div>
         <div class="col-sm-6">
             <span class="glyphicon glyphicon-heart logo-small"></span>
             <h4>Favorite</h4>
-            <p>I just want to makes it cool</p>
+            <p>Record favorite books</p>
         </div>
 
 
@@ -294,13 +303,13 @@
     <div class="col-sm-6">
         <span class="glyphicon glyphicon-bookmark logo-small"></span>
         <h4>Historical</h4>
-        <p>I just want to makes it cool</p>
+        <p>Browse your history</p>
     </div>
     <div class="row">
         <div class="col-sm-6">
             <span class="glyphicon glyphicon-tags logo-small"></span>
             <h4>Track</h4>
-            <p>I just want to makes it cool</p>
+            <p>Track any book you want to read</p>
         </div>
 
     </div>

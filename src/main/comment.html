@@ -40,7 +40,7 @@
         }
   </style>
   <script type="module">
-    import { reserveBook } from "./CheckModule/Check/check.js";
+    import {leaveComment} from "./CheckModule/Comment/comment.js";
     const category_list = new Map([
                 ["action_and_adventure", "Action/Adventure"],
                 ["alternate_history", "Alternate History"],
@@ -79,38 +79,21 @@
         //console.log(decodeURI(bookTitle));
         createInfo(bookTitle,[]);
     }
-    function reserve(){
-        var yes = confirm('你確定要預約 '+ bookData[0].title +' 嗎？');
-        if (yes) {
-            var tmpID;
-            var re = 0;
-            for(var i=0;i<bookData[0].books.length;i++){
-                console.log(bookData[0].books[i].book_status);
-                if(bookData[0].books[i].book_status=="IDLE" || bookData[0].books[i].book_status=="RESERVE") {
-                    reserveBook(bookData[0].books[i].book_ID);
-                    console.log(bookData[0].books[i].book_ID);
-                    console.log("IDLE");
-                    re = 1;
-                    break;
-                }
-                else if(bookData[0].books[i].book_status=="BORROW"){
-                    tmpID=bookData[0].books[i].book_ID
-                    console.log(bookData[0].books[i].book_ID);
-                }
-            }
-
-            if(re!=1){
-                alert("此書現在在圖書館內沒有閒置 已經幫您預約此書!");
-                reserveBook(tmpID);
-                console.log("BORROW");
-                re=1;
-            }
-        }
-    }
 
     function comment(){
-        document.location.href='comment.html?title='+encodeURI(encodeURI(bookData[0].title));
+        document.location.href='view.html?title='+encodeURI(encodeURI(bookData[0].title));
     }
+
+    function LeaveComment(){
+        var yes = confirm('你確定要發表評論嗎');
+        if(yes)
+            leaveComment(bookData[0].title,document.getElementById("number").value,document.getElementById("text").value);
+        console.log(document.getElementById("number").value);
+        console.log(document.getElementById("text").value);
+        
+    }
+
+
     function createInfo(__title,__category){
         if (!(__title.length <= 64)) {
         console.log('__title 長度超出限制。');
@@ -178,21 +161,27 @@
                 li+='<h4><span class="glyphicon glyphicon-bookmark"></span>發行商:' + bookData[0].publisher +'</h4>';
                 li+='<h5><span class="glyphicon glyphicon-time"></span>發行日期:' +bookData[0].publish_date + '</h5>';
                 li+='<h5><span class="glyphicon glyphicon-time"></span>上架日期:' +bookData[0].arrive_date + '</h5>';
-                li+='</div><div class="col-sm-8"><h4><small>書籍簡介</small></h4><hr><h3 class="text-info">';
-                li+=bookData[0].description +'</h3><br><br><hr>';
-                li+='<div class="text-center col-md-4"><button type="button" class="btn btn-success btn-lg" id="reserve">預約</button></div><div class="text-center col-md-4"><button type="button" class="btn btn-info btn-lg" id="Comment">前往所有評論</button></div>&nbsp<br><br>&nbsp<h5>近期評論:</h5><br>';
+                li+='</div><div class="col-sm-8">';
                 
                 if(bookData[0].comments[0]){
-                    li+='<div class="col-sm-2 text-center"><img src="https://imgur.com/FuZhgll.png" class="img-circle" height="65" width="65"></div>';
-                    li+='<div><h4> ' + bookData[0].comments[0].username +'<small><span class="glyphicon glyphicon-time"></span> ' + bookData[0].comments[0].comment_date +'</small></h4>';
-                    li+='<p>' + bookData[0].comments[0].comment + '</p><br></div></div></div>';
+                    for(var i=0;i<bookData[0].comments.length;i++){
+                        li+='<div class="col-sm-2 text-center"><img src="https://imgur.com/FuZhgll.png" class="img-circle" height="65" width="65"></div>';
+                        li+='<div><h4>' + bookData[0].comments[i].username +'&nbsp;<small><span class="glyphicon glyphicon-time"></span>&nbsp;' + bookData[0].comments[i].comment_date;
+                        li+='&nbsp;<span class="glyphicon glyphicon-star"></span>&nbsp;評分:' + bookData[0].comments[i].score +'</small></h4>';
+                        li+='<p>' + bookData[0].comments[i].comment + '</p><br></div>';
+                    }
+                    
                 }
                 else{
-                    li+='<div style="padding-left:50px;">暫無評論</div></div>'
+                    li+='<div style="padding-left:50px;">暫無評論</div><br>'
                 }
+                li+='<div class="text-center col-md-5"><button type="button" class="btn btn-success btn-lg" id="reserve">預約</button></div><div class="text-center col-md-5"><button type="button" class="btn btn-info btn-lg" id="Comment">回到詳細資料</button></div><h1>&nbsp;&nbsp;</h1>';
+                li+='<div style="padding-left:50px;"><textarea name="textarea" id="text" rows="10" cols="100">Write something here</textarea></div>';
+                li+='<div style="padding-left:50px;">評分: <select id="number"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>&nbsp;&nbsp;';
+                li+='<span style="padding-left:560px;"><button type="button" class="btn btn-danger btn-lg" id="comment">發表評論</button></div>';
                 document.getElementById("book").innerHTML=li;
-                document.getElementById("reserve").addEventListener("click",reserve,false);
                 document.getElementById("Comment").addEventListener("click",comment,false);
+                document.getElementById("comment").addEventListener("click",LeaveComment,false);
             }
             else {
                 console.log(response.errorMsg);

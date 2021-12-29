@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>librarySystem</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        .navbar {
+        margin-bottom: 0;
+        background-color: #FFA042;
+        z-index: 9999;
+        border: 0;
+        font-size: 12px !important;
+        line-height: 1.42857143 !important;
+        letter-spacing: 4px;
+        border-radius: 0;
+        }
+
+        .navbar li a, .navbar .navbar-brand {
+        color: #fff !important;
+        }
+
+        .navbar-nav li a:hover, .navbar-nav li.active a {
+        color: #FFA042 !important;
+        background-color: #fff !important;
+        }
+
+        .navbar-default .navbar-toggle {
+        border-color: transparent;
+        color: #fff !important;
+        } 
+        .row.content {height: 1500px}
+    
+        .sidenav {
+        background-color: #f1f1f1;
+        height: 100%;
+        }
+  </style>
+
+  <script type="module">
+    //import {searchBook} from "./SearchViewModule/Search/search.js";
+    var bookTitle;
+    if(/title/.test(location.search)){
+      bookTitle = location.search.split("=")[1];
+      bookTitle = decodeURI(decodeURI(bookTitle)); // ?title=書名 
+    }
+    
+    console.log(bookTitle);
+    const category_list = new Map([
+                ["action_and_adventure", "Action/Adventure"],
+                ["alternate_history", "Alternate History"],
+                ["anthology", "Anthology"],
+                ["chick_lit", "Chick Lit"],
+                ["children", "Children"],
+                ["classic", "Classic"],
+                ["comic_book", "Comic Book"],
+                ["coming_of_age", "Coming of Age"],
+                ["crime", "Crime"],
+                ["drama", "Drama"],
+                ["fairytale", "Fairytale"],
+                ["fantasy", "Fantasy"],
+                ["graphic_novel", "Graphic Novel"],
+                ["historical_fiction", "Historical Fiction"],
+                ["horror", "Horror"],
+                ["mystery", "Mystery"],
+                ["paranormal_romance", "Paranormal Romance"],
+                ["picture_book", "Picture Book"],
+                ["poetry", "Poetry"],
+                ["political_thriller", "Political Thriller"],
+                ["romance", "Romance"],
+                ["satire", "Satire"],
+                ["science_fiction", "Science Fiction"],
+                ["short_story", "Short Story"],
+                ["suspense", "Suspense"],
+                ["thriller", "Thriller"],
+                ["western", "Western"],
+                ["young_adult", "Young Adult"]
+            ]);
+    var category = [...category_list.keys()];
+    var bookData =[];
+    function start(){
+      createCategory();
+      document.getElementById("btn").addEventListener("click",search,false);
+      if(typeof(bookTitle) != "undefined"){
+        console.log(bookTitle);
+        console.log("123");
+        searchBook(bookTitle,[]);
+      }
+      else searchBook(document.getElementById("input").value,[]);
+    }
+
+    function search(){
+      var _cat = [];
+      for(var i=0;i<category.length;i++){
+        if(document.getElementById("c" + i).checked) _cat.push(category[i]);
+      }
+      searchBook(document.getElementById("input").value,_cat);
+    }
+
+    function createCategory(){
+      var li='<br><h2><span class="glyphicon glyphicon-tags" style="color: #FFA042;"></span> 書籍類別</h2><br>';
+      for(var i=0;i<category.length;i++){
+        li+='<div class="checkbox"><label><input type="checkbox" value="1" id="c'+ i + '">' + category_list.get(category[i]) + '</label></div>';
+      }
+      document.getElementById("category").innerHTML=li;
+    }
+
+    function searchBook(__title, __category) {
+      console.log(__title);
+    if (!(__title.length <= 64)) {
+        //console.log('__title 長度超出限制。');
+        return;
+    }
+    else if (!Array.isArray(__category)) {
+        //console.log('__category 並非陣列。');
+        return;
+    }
+
+    if (__title == '') { // 至少一個字元
+        __title = '_';
+    }
+    if (__category.length == 0) { // 都沒有時則全選
+        __category = ["action_and_adventure", "alternate_history", "anthology", "chick_lit", "children",
+                        "classic", "comic_book", "coming_of_age", "crime", "drama",
+                        "fairytale", "fantasy", "graphic_novel", "historical_fiction", "horror",
+                        "mystery", "paranormal_romance", "picture_book", "poetry", "political_thriller",
+                        "romance", "satire", "science_fiction", "short_story", "suspense",
+                        "thriller", "western", "young_adult"];
+    }
+
+    $.ajax({
+        type: "GET",
+        url: "SearchViewModule/Search/searchBook.php",
+        dataType: "json",
+        data: {
+            title: __title,
+            category: __category,
+        },
+        success: function(response) {
+            if (response.result) { // 回傳的 json 中含有 result
+                var li="";
+                bookData = response.result;
+                for(var i=0;i<bookData.length;i++){
+                  if(i%2==0)
+                    li+='<div style="background-color: #f1f1f1;">';
+                  else
+                    li+='<div>';
+
+                  li+='<div class="row"><img class="col-sm-2" src="' + bookData[i].image +'.png">';
+                  li+='<small>書籍簡介:</small><br><br><h4 class="col-sm-10 text-info text-justify" style="padding-right:3%">' + bookData[i].description + '</h4></div>';
+                  li+='<div class="row"><div class="col-sm-2 text-center"><h5>';
+
+                  for(var j=0;j<bookData[i].category.length;j++){
+                    if(j%2==0) li+='<span class="label label-danger">';
+                    else li+='<span class="label label-primary">';
+                    li += category_list.get(bookData[i].category[j])  + '</span>';
+                  }
+                  li+='</h5><h4><a href="view.html?title='+encodeURI(encodeURI(bookData[i].title))+ '">' + bookData[i].title + '</a></h4></div></div>';
+                  li+='</div>';
+                }
+                
+                document.getElementById("book").innerHTML=li;
+            }
+            else {
+                //console.log(response.errorMsg);
+                document.getElementById("book").innerHTML=response.errorMsg;
+            }
+        },
+        error: function(jqXHR) {
+            console.log(jqXHR);
+        }
+    })
+}
+    window.addEventListener("load",start,false);
+  </script>
+</head>
+    <body>
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Logo</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav navbar-right">
+                <li><a href="#about">ABOUT</a></li>
+                <li><a href="#services">SERVICES</a></li>
+                <li><a href="#portfolio">PORTFOLIO</a></li>
+                <li><a href="#pricing">PRICING</a></li>
+                <li><a href="#contact">CONTACT</a></li>
+                </ul>
+            </div>
+            </div>
+        </nav><br><br>
+
+        <div class="container-fluid">
+            <div class="row content">
+              <div class="col-sm-2 sidenav" id="category" style="padding-left: 2%;">
+                <br>
+                <h2><span class="glyphicon glyphicon-tags" style="color: #FFA042;"></span> 書籍類別</h2><br>
+                <div class="checkbox">
+                    <label><input type="checkbox" value="">Option 1</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" value="">Option 2</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" value="">Option 3</label>
+                  </div>
+              </div><br>
+              <div class="col-sm-10">
+              
+                <div class="input-group">
+                  <input type="text" class="form-control input-lg" placeholder="Search" id="input" value="">
+                  <div class="input-group-btn">
+                    <button class="btn btn-default btn-lg" id="btn">
+                      <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <br>
+                <div id="book">
+                  
+                </div>
+                </div>
+              </div>
+            </div>
+    </body>
+</html>
