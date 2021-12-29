@@ -3,7 +3,8 @@
     $conn = require_once "../../config.php";
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $ID = $_POST["ID"];
+        session_start();
+        $ID = $_SESSION["ID"];
         $new_password = $_POST["password"];
 
         if ($ID != null && $new_password != null &&
@@ -13,14 +14,26 @@
             $sql = "SELECT password FROM User WHERE ID = '$ID'";
             $result = mysqli_query($conn, $sql);
 
-            if ($result) { // ID 唯一
-                $row = mysqli_fetch_assoc($result);
-                $old_password = $row["password"];
+            $sql = "SELECT password
+                    FROM User
+                    WHERE ID = ?";
+            $stmt = $conn->prepare($sql); 
+            $stmt->bind_param("i", $ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+            if (count($rows) == 1) { // ID 唯一
+                $old_password = $rows[0]["password"];
 
                 if ($old_password != $new_password) {
                     // 更新密碼
-                    $sql = "UPDATE User SET password = '$new_password' WHERE ID = '$ID' and password = '$old_password'";
-                    $result = mysqli_query($conn, $sql);
+                    $sql = "UPDATE User 
+                            SET password = ?
+                            WHERE ID = ? and password = ?";
+                    $stmt = $conn->prepare($sql); 
+                    $stmt->bind_param("sis", $new_password, $ID, $old_password);
+                    $result = $stmt->execute();
 
                     if ($result) {
                         echo json_encode(array('__STATUS' => 'SUCCESS'));
@@ -34,6 +47,10 @@
                     echo json_encode(array('__STATUS' => 'ERROR',
                                         'errorMsg' => '新舊密碼不可相同。'));
                 }
+            }
+            else {
+                echo json_encode(array('__STATUS' => 'ERROR',
+                                    'errorMsg' => '資料庫發生不可預期的錯誤！'));
             }
         }
         else {
