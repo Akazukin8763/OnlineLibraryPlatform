@@ -30,7 +30,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-        <title>Online Library Platform - 書籍管理</title>
+        <title>Online Library Platform｜Manage</title>
 
         <style>
             .navbar {
@@ -74,6 +74,14 @@
             }
             .navhref:hover {
                 color: #555555;
+            }
+            
+            .fuckyou ul li{
+                color: black !important;
+                padding-left: 5%;
+            }
+            .fuckyou ul li:hover {
+                color: #FFA042 !important;
             }
         </style>
         
@@ -326,6 +334,11 @@
                 $('#editCategory').html(editCategory);
             }
             
+            import { logout } from "./AccountModule/Account/account.js";
+            $("#btn_logout").click(function() {
+                logout();
+            })
+            
             window.addEventListener("load", createUploadCategory, false);
             window.addEventListener("load", createEditCategory, false);
         </script>
@@ -343,6 +356,24 @@
                         <li><a href="welcome.php#services">SERVICES</a></li>
                         <li><a href="welcome.php#pricing">PRICING</a></li>
                         <li><a href="welcome.php#contact">CONTACT</a></li>
+
+                        <li class="dropdown fuckyou">
+                            <a class="dropdown-toggle" data-toggle="dropdown" data-target="#navbarDropdown">
+                                <span class="glyphicon glyphicon-user"></span>
+                                <?php echo $username; ?>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="navbarDropdown">
+                                <li onclick="location='setting.php'"><span class="glyphicon glyphicon-cog"></span> Setting</li>
+                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-list-alt"></span> Trace</li>
+                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-dashboard"></span> Status</li>
+                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-time"></span> History</li>
+                                <li onclick="location='favorite.php'"><span class="glyphicon glyphicon-heart"></span> Favoirte</li>
+                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-bell"></span> Notification</li>
+                                <li role="separator" class="divider"></li>
+                                <li id="btn_logout"><span class="glyphicon glyphicon-log-out"></span> Log out</li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
