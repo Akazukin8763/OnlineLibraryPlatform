@@ -73,6 +73,7 @@
             .fuckyou ul li{
                 color: black !important;
                 padding-left: 5%;
+                width: 190px !important;
             }
             .fuckyou ul li:hover {
                 color: #FFA042 !important;
@@ -121,7 +122,7 @@
                                 <?php echo $username; ?>
                                 <span class="caret"></span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="navbarDropdown">
+                            <ul class="dropdown-menu dropdown-menu-left w-100" aria-labelledby="navbarDropdown">
                                 <li onclick="location='setting.php'"><span class="glyphicon glyphicon-cog"></span> Setting</li>
                                 <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-list-alt"></span> Trace</li>
                                 <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-dashboard"></span> Status</li>
