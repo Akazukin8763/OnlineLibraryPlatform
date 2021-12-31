@@ -125,7 +125,10 @@ export function viewFavorite() {
 
                         var edit = $('<label class="glyphicon glyphicon-cog" style="color: #9C9C9C;"></label>');
                         var title = $('<label></label>');
-                        title.html("&nbsp;" + content.title);
+
+                        var link = $('<a>' + "&nbsp;" + content.title + '</a>');
+                        link.attr("href", "view.php?title=" + encodeURI(encodeURI(content.title)));
+                        link.appendTo(title);
 
                         edit.click(function() {
                             $("#modalEditList").modal("show");
