@@ -366,11 +366,11 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-left w-100" aria-labelledby="navbarDropdown">
                                 <li onclick="location='setting.php'"><span class="glyphicon glyphicon-cog"></span> Setting</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-list-alt"></span> Trace</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-dashboard"></span> Status</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-time"></span> History</li>
-                                <li onclick="location='favorite.php'"><span class="glyphicon glyphicon-heart"></span> Favoirte</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-bell"></span> Notification</li>
+                                <li onclick="location='trace.php'"><span class="glyphicon glyphicon-list-alt"></span> Trace</li>
+                                <li onclick="location='status.php'"><span class="glyphicon glyphicon-dashboard"></span> Status</li>
+                                <li onclick="location='history.php'"><span class="glyphicon glyphicon-time"></span> History</li>
+                                <li onclick="location='favorite.php'"><span class="glyphicon glyphicon-heart"></span> Favorite</li>
+                                <li onclick="location='notification.php'"><span class="glyphicon glyphicon-bell"></span> Notification</li>
                                 <li role="separator" class="divider"></li>
                                 <li id="btn_logout"><span class="glyphicon glyphicon-log-out"></span> Log out</li>
                             </ul>

@@ -312,11 +312,11 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-left w-100" aria-labelledby="navbarDropdown">
                                 <li onclick="location='setting.php'"><span class="glyphicon glyphicon-cog"></span> Setting</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-list-alt"></span> Trace</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-dashboard"></span> Status</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-time"></span> History</li>
-                                <li onclick="location='favorite.php'"><span class="glyphicon glyphicon-heart"></span> Favoirte</li>
-                                <li onclick="location='welcome.php'"><span class="glyphicon glyphicon-bell"></span> Notification</li>
+                                <li onclick="location='trace.php'"><span class="glyphicon glyphicon-list-alt"></span> Trace</li>
+                                <li onclick="location='status.php'"><span class="glyphicon glyphicon-dashboard"></span> Status</li>
+                                <li onclick="location='history.php'"><span class="glyphicon glyphicon-time"></span> History</li>
+                                <li onclick="location='favorite.php'"><span class="glyphicon glyphicon-heart"></span> Favorite</li>
+                                <li onclick="location='notification.php'"><span class="glyphicon glyphicon-bell"></span> Notification</li>
                                 <li role="separator" class="divider"></li>
                                 <li id="btn_logout"><span class="glyphicon glyphicon-log-out"></span> Log out</li>
                             </ul>
@@ -331,7 +331,7 @@
                 
                 <div class="col-sm-2 sidenav">
                     <br>
-                    <h3><span class="glyphicon glyphicon-leaf" style="color: #FFA042;"></span>搜尋書籍</h3>
+                    <h3><span class="glyphicon glyphicon-leaf" style="color: #FFA042;"></span> 搜尋書籍</h3>
                     
                     <span id="favoriteBookERR" style="color:red">&zwnj;</span>
                     <div class="input-group">
@@ -352,7 +352,7 @@
 
                 <div class="col-sm-10">
                     <br>
-                    <h3 class="text-center">我的最愛</h3>
+                    <h3 class="text-center"><span class="glyphicon glyphicon-heart" style="color: #FFA042;"></span> 我的最愛</h3>
                     <h3><span class="glyphicon glyphicon-th-list" data-toggle="modal" data-target="#modalCreateList" style="float: center; color: #FFA042;"></span><span>&nbsp;創建清單</span></h3>
                     
                     <div class="container-fluid" id="favoriteFolder">
