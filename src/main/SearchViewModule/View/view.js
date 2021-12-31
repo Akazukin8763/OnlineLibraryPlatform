@@ -217,16 +217,27 @@ export function viewNotification() {
         data: {},
         success: function(response) {
             if (response.result) { // 回傳的 json 中含有 result
+                var result = $("#books");
+                result.empty();
+
                 response.result.forEach(book => {
-                    console.log("notify_date: " + book.notify_date + ", content: " + book.content);
+                    //console.log("notify_date: " + book.notify_date + ", content: " + book.content);
+                    var tr = $("<tr></tr>");
+
+                    $('<th scope="row">' + book.notify_date + '</th>').appendTo(tr);
+                    $('<td>' + book.content + '</td>').appendTo(tr);
+
+                    tr.appendTo(result);
                 });
             }
             else {
-                console.log(response.errorMsg);
+                //console.log(response.errorMsg);
+                $("#books").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#books").html("伺服器連線錯誤。");
         }
     })
 }
