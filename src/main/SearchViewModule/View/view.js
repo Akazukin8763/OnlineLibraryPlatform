@@ -253,23 +253,43 @@ export function viewTrace() {
         data: {},
         success: function(response) {
             if (response.result) { // 回傳的 json 中含有 result
+                var result = $("#traceBooks");
+                result.empty();
+
                 response.result.forEach(book => {
-                    console.log("title: " + book.title + ", book_status: " + book.book_status);
+                    //console.log("title: " + book.title + ", book_status: " + book.book_status);
+                    var tr = $("<tr></tr>");
+
+                    $('<th scope="row">' + book.title + '</th>').appendTo(tr);
+                    $('<td>' + book.book_status + '</td>').appendTo(tr);
+
+                    var remove = $('<td style="vertical-align: middle;"></td>');
+                    var btn_remove = $('<span class="glyphicon glyphicon-remove" style="float: center; color: #FFA042;"></span>');
+                    btn_remove.click(function() {
+                        traceRemove(book.title);
+                    });
+                    remove.append(btn_remove);
+                    remove.appendTo(tr);
+
+                    tr.appendTo(result);
                 });
             }
             else {
-                console.log(response.errorMsg);
+                //console.log(response.errorMsg);
+                $("#traceBookERR").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#traceBookERR").html("伺服器連線錯誤。");
         }
     })
 }
 
 export function traceBook(__title) {
     if (!(0 < __title.length && __title.length <= 64)) {
-        console.log('__title 長度超出限制。');
+        if (!(0 < __title.length)) $("#traceBookERR").html("請輸入書籍名稱。");
+        else $("#traceBookERR").html("長度需小於 64 個字元。");
         return;
     }
     
@@ -283,18 +303,59 @@ export function traceBook(__title) {
         success: function(response) {
             if (response.__STATUS) { // 回傳的 json 中含有 __STATUS
                 if (response.__STATUS == "SUCCESS") {
-                    console.log(response.__STATUS);
+                    //console.log(response.__STATUS);
+                    $("#btn_searchBook").trigger("click");
                 }
                 else {
-                    console.log(response.__STATUS + ": " + response.errorMsg);
+                    //console.log(response.__STATUS + ": " + response.errorMsg);
+                    $("#traceBookERR").html(response.errorMsg);
                 }
             }
             else {
                 console.log(response.errorMsg);
+                $("#traceBookERR").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#traceBookERR").html("伺服器連線錯誤。");
+        }
+    })
+}
+
+export function traceRemove(__title) {
+    if (!(0 < __title.length && __title.length <= 64)) {
+        if (!(0 < __title.length)) $("#traceBookERR").html("請輸入書籍名稱。");
+        else $("#traceBookERR").html("長度需小於 64 個字元。");
+        return;
+    }
+    
+    $.ajax({
+        type: "POST",
+        url: "SearchViewModule/View/traceRemove.php",
+        dataType: "json",
+        data: {
+            title: __title,
+        },
+        success: function(response) {
+            if (response.__STATUS) { // 回傳的 json 中含有 __STATUS
+                if (response.__STATUS == "SUCCESS") {
+                    //console.log(response.__STATUS);
+                    $("#btn_searchBook").trigger("click");
+                }
+                else {
+                    //console.log(response.__STATUS + ": " + response.errorMsg);
+                    $("#traceBookERR").html(response.errorMsg);
+                }
+            }
+            else {
+                console.log(response.errorMsg);
+                $("#traceBookERR").html(response.errorMsg);
+            }
+        },
+        error: function(jqXHR) {
+            //console.log(jqXHR);
+            $("#traceBookERR").html("伺服器連線錯誤。");
         }
     })
 }
