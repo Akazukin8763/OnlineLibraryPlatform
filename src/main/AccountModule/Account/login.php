@@ -57,6 +57,15 @@
                     exit;
                 }
                 
+                // 確認使用者有無逾期
+                require_once "../../__check_deadline.php";
+
+                if (!check_deadline($conn, $ID)) {
+                    $conn->rollback();
+                    echo json_encode(array('errorMsg' => '登入設定時發生錯誤。'));
+                    exit;
+                }
+
                 // 獲取偏好設定
                 $sql = "SELECT *
                         FROM User_Preferences
