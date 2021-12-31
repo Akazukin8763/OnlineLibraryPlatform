@@ -6,16 +6,39 @@ export function viewStatus() {
         data: {},
         success: function(response) {
             if (response.result) { // 回傳的 json 中含有 result
+                var result = $("#books");
+                result.empty();
+
                 response.result.forEach(book => {
-                    console.log("book_ID: " + book.book_ID + ", title: " + book.title + ", image: " + book.image + ", book_status: " + book.book_status + ", order: " + book.order + ", deadline: " + book.deadline);
+                    //console.log("book_ID: " + book.book_ID + ", title: " + book.title + ", image: " + book.image + ", book_status: " + book.book_status + ", order: " + book.order + ", deadline: " + book.deadline);
+                    var tr = $("<tr></tr>");
+
+                    var book_ID = $('<th scope="row">' + book.book_ID + '</th>');
+                    var title = $('<td></td>');
+                    var book_status = $('<td>' + book.book_status + '</td>');
+                    var order = $('<td>' + (book.book_status == "RESERVE" ? book.order : "") + '</td>');
+                    var deadline = $('<td>' + (book.book_status == "BORROW" ? book.deadline : "") + '</td>');
+
+                    var link = $('<a>' + book.title + '</a>');
+                    link.attr("href", "view.php?title=" + encodeURI(encodeURI(book.title)));
+                    link.appendTo(title);
+
+                    book_ID.appendTo(tr);
+                    title.appendTo(tr);
+                    book_status.appendTo(tr);
+                    order.appendTo(tr);
+                    deadline.appendTo(tr);
+                    tr.appendTo(result);
                 });
             }
             else {
-                console.log(response.errorMsg);
+                //console.log(response.errorMsg);
+                $("#books").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#books").html("伺服器連線錯誤。");
         }
     })
 }
