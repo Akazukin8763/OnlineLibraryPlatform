@@ -19,7 +19,7 @@
             
             $sql = "SELECT *
                     FROM Book_Trace NATURAL JOIN Book NATURAL JOIN Book_Detail
-                    WHERE ID = ? AND end_date IS NOT NULL";
+                    WHERE ID = ? AND end_date IS NOT NULL ORDER BY end_date DESC";
             $stmt = $conn->prepare($sql); 
             $stmt->bind_param("i", $ID);
             $stmt->execute();
