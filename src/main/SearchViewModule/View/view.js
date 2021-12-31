@@ -28,16 +28,37 @@ export function viewHistory() {
         data: {},
         success: function(response) {
             if (response.result) { // 回傳的 json 中含有 result
+                var result = $("#books");
+                result.empty();
+
                 response.result.forEach(book => {
-                    console.log("book_ID: " + book.book_ID + ", title: " + book.title + ", image: " + book.image + ", start_date: " + book.start_date + ", end_date: " + book.end_date);
+                    //console.log("book_ID: " + book.book_ID + ", title: " + book.title + ", image: " + book.image + ", start_date: " + book.start_date + ", end_date: " + book.end_date);
+                    var tr = $("<tr></tr>");
+
+                    var book_ID = $('<th scope="row">' + book.book_ID + '</th>');
+                    var title = $('<td></td>');
+                    var start_date = $('<td>' + book.start_date + '</td>');
+                    var end_date = $('<td>' + book.end_date + '</td>');
+
+                    var link = $('<a>' + book.title + '</a>');
+                    link.attr("href", "view.php?title=" + encodeURI(encodeURI(book.title)));
+                    link.appendTo(title);
+
+                    book_ID.appendTo(tr);
+                    title.appendTo(tr);
+                    start_date.appendTo(tr);
+                    end_date.appendTo(tr);
+                    tr.appendTo(result);
                 });
             }
             else {
-                console.log(response.errorMsg);
+                //console.log(response.errorMsg);
+                $("#books").html(response.errorMsg);
             }
         },
         error: function(jqXHR) {
-            console.log(jqXHR);
+            //console.log(jqXHR);
+            $("#books").html("伺服器連線錯誤。");
         }
     })
 }
