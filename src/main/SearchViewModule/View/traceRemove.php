@@ -8,13 +8,13 @@
         $title = $_POST["title"];
 
         $conn->autocommit(false);
-        
+
         if ($title != null &&
             is_string($title) &&
             strlen($title) <= 64) {
 
-            $sql = "INSERT INTO User_Trace (ID, title) 
-                    Values (?, ?)";
+            $sql = "DELETE FROM User_Trace 
+                    WHERE ID = ?  AND title = ?";
             $stmt = $conn->prepare($sql); 
             $stmt->bind_param("is", $ID, $title);
             $result = $stmt->execute();
@@ -25,7 +25,7 @@
             }
             else {
                 $conn->rollback();
-                echo json_encode(array('__STATUS' => 'ERROR', 'errorMsg' => '無法追蹤相同名稱的書籍。'));
+                echo json_encode(array('__STATUS' => 'ERROR', 'errorMsg' => '刪除追蹤時發生錯誤。'));
             }
         }
         else {
