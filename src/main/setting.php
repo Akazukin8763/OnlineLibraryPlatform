@@ -131,7 +131,7 @@
                       Setting
                       </a>
                   </li>
-                  <li><a class="dropdown-item" href="#">
+                  <li><a class="dropdown-item" href="trace.php">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-calendar-range" viewBox="0 0 18 18">
                           <path d="M9 7a1 1 0 0 1 1-1h5v2h-5a1 1 0 0 1-1-1zM1 9h4a1 1 0 0 1 0 2H1V9z"></path>
                           <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"></path>
@@ -139,7 +139,7 @@
                       Trace
                       </a>
                   </li>
-                  <li><a class="dropdown-item" href="#">
+                  <li><a class="dropdown-item" href="status.php">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-speedometer" viewBox="0 0 18 18">
                           <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2zM3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.389.389 0 0 0-.029-.518z"></path>
                           <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.945 11.945 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0z"></path>
@@ -147,7 +147,7 @@
                       Status
                       </a>
                   </li>
-                  <li><a class="dropdown-item" href="#">
+                  <li><a class="dropdown-item" href="history.php">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 18 18">
                           <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z"></path>
                           <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"></path>
@@ -163,11 +163,11 @@
                       Favorite
                       </a>
                   </li>
-                  <li><a class="dropdown-item" href="#">
+                  <li><a class="dropdown-item" href="notification.php">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 18 18">
                           <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"></path>
                       </svg>
-                      Notfication
+                      Notification
                       </a>
                   </li>
                   <li><hr class="dropdown-divider"></li>
@@ -209,7 +209,23 @@
                 <input type="password" id="new_password" name="new_password" class="form-control mb-3" placeholder="Enter New Password">
                 <label for="new_password" class="ms-2">Enter New Password</label>
                 <div class="d-grid">
-                  <button id="changePassword" class="btn btn-outline-danger saveButton">Save</button>
+                  <div class="modal fade" id="exampleModalLive" tabindex="-1" aria-labelledby="exampleModalLiveLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLiveLabel">Success</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Woohoo, we've save your change!</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Great</button>
+                        </div>
+                        </div>
+                    </div>
+                  </div>
+                  <button id="changePassword" class="btn btn-outline-danger saveButton" data-bs-toggle="modal" data-bs-target="#exampleModalLive">Save</button>
                 </div>
               </div>
             </div>
@@ -228,7 +244,7 @@
                 <input id="new_username" name="new_username" class="form-control mb-3" placeholder="Enter New Username">
                 <label for="new_username" class="ms-2">Enter New Username</label>
                 <div class="d-grid">
-                  <button id="changeUsername" class="btn btn-outline-danger saveButton">Save</button>
+                  <button id="changeUsername" class="btn btn-outline-danger saveButton" data-bs-toggle="modal" data-bs-target="#exampleModalLive">Save</button>
                 </div>
               </div>
             </div>
@@ -366,7 +382,7 @@
                       echo "<script>".$result."</script>"; 
                   ?>
                 <div class="d-grid mt-2">
-                  <button id="setPreferences" class="btn btn-outline-danger saveButton">Save</button>
+                  <button id="setPreferences" class="btn btn-outline-danger saveButton" data-bs-toggle="modal" data-bs-target="#exampleModalLive">Save</button>
                 </div>
               </div>
             </div>
