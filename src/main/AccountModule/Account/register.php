@@ -36,7 +36,19 @@
 
                 if ($result) {
                     $row = mysqli_fetch_assoc($result);
-                    echo json_encode(array('ID' => $row["ID"]));
+                    $ID = $row["ID"];
+
+                    // 建立個人偏好
+                    $sql = "INSERT INTO User_Preferences (ID)
+                            VALUES ('$ID')";
+                    $result = mysqli_query($conn, $sql);
+
+                    if ($result) {
+                        echo json_encode(array('ID' => $ID));
+                    }
+                    else {
+                        echo json_encode(array('errorMsg' => '建立帳號時發生錯誤。'));
+                    }
                 }
                 else {
                     echo json_encode(array('errorMsg' => '獲取使用者 ID 時發生錯誤。'));

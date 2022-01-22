@@ -1,7 +1,4 @@
 <?php
-    /*
-    待修正 _SESSION 
-    */
     // Include config file
     $conn = require_once "../../config.php";
 

@@ -3,7 +3,8 @@
     $conn = require_once "../../config.php";
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $ID = $_POST["ID"];
+        session_start(); 
+        $ID = $_SESSION["ID"];
 
         if ($ID != null &&
             is_int((int) $ID)) {
@@ -13,7 +14,6 @@
             $result = mysqli_query($conn, $sql);
     
             if ($result) {
-                session_start(); 
                 $_SESSION = array(); 
                 session_destroy(); 
 
